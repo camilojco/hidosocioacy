@@ -1,0 +1,7 @@
+    - Mapacy:
+        icon: mdi-map-marker-radius
+        href: https://mapacy.romagal.com/
+        description: Censo hidrosocial Acaray–Yguazú
+        siteMonitor: http://mapacy:8050/healthz
+        server: my-docker
+        container: mapacy
