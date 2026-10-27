@@ -1,0 +1,2113 @@
+<title>Censo Hidrosocial Acaray-Yguazú</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/*__LEAFLET_CSS__*/
+</style>
+<style>
+/* Layout: aplicación de pantalla completa — barra superior, panel de fichas a la izquierda, mapa al centro, ficha a la derecha.
+   Lenguaje visual: carta topográfica de relevamiento (tierra verde-gris, agua apagada, tinta petróleo) */
+:root{
+  --bg:#f3f4ef; --panel:#fbfbf8; --panel-2:#eef0e8; --line:#d9dccf; --line-2:#c6cabb;
+  --ink:#16201d; --ink-2:#47524c; --ink-3:#717b74;
+  --accent:#0d5b63; --accent-ink:#ffffff; --accent-soft:#d9ebea;
+  --land:#eef0e8; --water:#b4cfde; --water-line:#7ea6bd; --boundary:#aeb4a3; --dlabel:#6a7268; --road:#c9b9a0;
+  --mark-ring:#fbfbf8;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --cgray:#8f948c; --scen:#2a78d6; --water-lvl:#8db7d3; --station:#5a2d82;
+  --o1:#e4864f; --o2:#c95a33; --o3:#a03a22; --o4:#661b12;
+  --warn:#9a5b00; --warn-bg:#fdf1d8; --bad:#a83232; --bad-bg:#f9e2df; --good:#1d6b3a; --good-bg:#dff0e3;
+  --shadow:0 1px 2px rgba(22,32,29,.06),0 8px 24px rgba(22,32,29,.10);
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101416; --panel:#161b1e; --panel-2:#1d2326; --line:#2a3236; --line-2:#3a4448;
+  --ink:#e8ece8; --ink-2:#b4bdb7; --ink-3:#86908a;
+  --accent:#6cc4c9; --accent-ink:#082427; --accent-soft:#173539;
+  --land:#1c2024; --water:#1f3a4d; --water-line:#3a6884; --boundary:#3c464a; --dlabel:#86908a; --road:#4a4436;
+  --mark-ring:#101416;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef;
+  --o1:#b8442a; --o2:#d9653b; --o3:#ee9363; --o4:#f8c49c;
+  --warn:#f0b54a; --warn-bg:#3a2c10; --bad:#ef8a80; --bad-bg:#3d1c1a; --good:#7dd39b; --good-bg:#16301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.45);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101416; --panel:#161b1e; --panel-2:#1d2326; --line:#2a3236; --line-2:#3a4448;
+  --ink:#e8ece8; --ink-2:#b4bdb7; --ink-3:#86908a;
+  --accent:#6cc4c9; --accent-ink:#082427; --accent-soft:#173539;
+  --land:#1c2024; --water:#1f3a4d; --water-line:#3a6884; --boundary:#3c464a; --dlabel:#86908a; --road:#4a4436;
+  --mark-ring:#101416;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef;
+  --o1:#b8442a; --o2:#d9653b; --o3:#ee9363; --o4:#f8c49c;
+  --warn:#f0b54a; --warn-bg:#3a2c10; --bad:#ef8a80; --bad-bg:#3d1c1a; --good:#7dd39b; --good-bg:#16301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.45);
+  color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;overflow:hidden}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-rows:auto 1fr;height:100%}
+
+/* ---------- barra superior ---------- */
+.top{display:flex;align-items:center;gap:16px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--panel);border-bottom:1px solid var(--line);min-width:0}
+.brandwrap{display:flex;align-items:center;gap:12px;min-width:0;margin-right:auto}
+.logo{height:46px;width:auto;flex:none;border-radius:2px;display:block}
+.brand{display:flex;flex-direction:column;min-width:0}
+.eyebrow{font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1.05;letter-spacing:.01em}
+.brand h1 span{color:var(--accent)}
+.source{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);padding:5px 10px;border:1px dashed var(--line-2);border-radius:999px;white-space:nowrap;max-width:340px;overflow:hidden;text-overflow:ellipsis}
+.source b{font-weight:600;color:var(--ink)}
+.dot-demo{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none}
+.dot-live{background:var(--good)}
+.tbar{display:flex;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--panel);cursor:pointer;font-weight:500;font-size:13.5px;white-space:nowrap}
+.btn:hover{background:var(--panel-2)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--panel-2)}
+.btn.small{height:28px;padding:0 9px;font-size:12.5px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.iconbtn{width:34px;padding:0;justify-content:center}
+
+/* ---------- cuerpo ---------- */
+.main{position:relative;display:grid;grid-template-columns:360px 1fr;min-height:0;overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-right:1px solid var(--line);z-index:5}
+.tabs{display:flex;gap:2px;padding:10px 14px 0;border-bottom:1px solid var(--line)}
+.tab{border:0;background:transparent;padding:8px 10px 9px;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.03em;color:var(--ink-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.stat{background:var(--panel);padding:10px 12px 9px;min-width:0;cursor:pointer;border:0;text-align:left}
+.stat:hover{background:var(--panel-2)}
+.stat[aria-pressed="true"]{background:var(--accent-soft)}
+.stat .n{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1}
+.stat .l{font-size:11px;color:var(--ink-3);line-height:1.25;margin-top:4px}
+.stat .n small{font-size:13px;color:var(--ink-3);font-weight:600}
+.filters{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.search{position:relative}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-3)}
+.search input{width:100%;height:34px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg);padding:0 10px 0 32px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{height:26px;padding:0 9px;border-radius:999px;border:1px solid var(--line-2);background:transparent;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.sel{height:30px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg);padding:0 6px;font-size:12.5px;min-width:0;flex:1}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.flabel{font-family:var(--f-display);font-weight:600;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.linkbtn{border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-size:12.5px;font-weight:500}
+.listhead{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;font-size:12px;color:var(--ink-3);border-bottom:1px solid var(--line)}
+.list{flex:1;overflow:auto;min-height:0}
+.item{display:grid;grid-template-columns:12px 1fr auto;gap:4px 10px;align-items:start;padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer;width:100%;background:transparent;border-left:0;border-right:0;border-top:0;text-align:left}
+.item:hover{background:var(--panel-2)}
+.item[aria-current="true"]{background:var(--accent-soft)}
+.item .sw{width:10px;height:10px;border-radius:50%;margin-top:4px;box-shadow:0 0 0 1.5px var(--mark-ring),0 0 0 2.5px var(--line-2)}
+.item .t1{font-family:var(--f-mono);font-size:12.5px;font-weight:500}
+.item .t2{font-size:12.5px;color:var(--ink-2);grid-column:2/4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .meta{font-size:11.5px;color:var(--ink-3);text-align:right;white-space:nowrap}
+.more{padding:12px 14px}
+.empty{padding:28px 18px;color:var(--ink-3);text-align:center}
+
+.pill{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 7px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;background:var(--panel-2);color:var(--ink-2)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+
+/* resumen */
+.summary{overflow:auto;padding:14px;display:flex;flex-direction:column;gap:18px}
+.summary h3{margin:0 0 8px;font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.03em}
+.summary .note{font-size:12px;color:var(--ink-3);margin:6px 0 0}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th{font-family:var(--f-display);font-weight:600;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:6px 6px;border-bottom:1px solid var(--line-2)}
+table.t td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+.summary table.t th.num{white-space:normal;line-height:1.15;width:52px}
+.summary table.t{font-size:12px}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar{display:grid;grid-template-columns:132px 1fr 34px;gap:8px;align-items:center;font-size:12.5px}
+.bar .track{height:10px;background:var(--panel-2);border-radius:2px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);border-radius:0 3px 3px 0}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.bar .k{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-2)}
+
+/* ---------- mapa ---------- */
+.mapwrap{position:relative;min-width:0;min-height:0}
+#map{position:absolute;inset:0;background:var(--land);z-index:0}
+.leaflet-container{font-family:var(--f-body);background:var(--land)}
+.leaflet-bar a{background:var(--panel);color:var(--ink);border-bottom-color:var(--line)}
+.leaflet-bar a:hover{background:var(--panel-2)}
+.leaflet-bar{border:1px solid var(--line-2)!important;box-shadow:var(--shadow)!important}
+.leaflet-control-attribution{background:color-mix(in srgb,var(--panel) 85%,transparent)!important;color:var(--ink-3)!important;font-size:10.5px}
+.leaflet-control-attribution a{color:var(--ink-2)!important}
+.leaflet-control-scale-line{background:color-mix(in srgb,var(--panel) 80%,transparent);border-color:var(--ink-2);color:var(--ink-2);font-family:var(--f-mono);font-size:10.5px}
+.leaflet-tooltip{background:var(--panel);color:var(--ink);border:1px solid var(--line-2);box-shadow:var(--shadow);font-family:var(--f-body);font-size:12px;padding:5px 8px;border-radius:5px}
+.leaflet-tooltip-top:before{border-top-color:var(--panel)}
+.dlabel{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dlabel);white-space:nowrap;text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land);transform:translate(-50%,-50%);pointer-events:none}
+.dlabel.dep{font-size:11px;opacity:.75}
+.wlabel{display:inline-block;font-family:var(--f-display);font-style:italic;font-weight:500;font-size:15px;letter-spacing:.12em;color:var(--water-line);white-space:nowrap;transform:translate(-50%,-50%);pointer-events:none}
+.dam svg{display:block}
+.map-sat .dlabel{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+.mcard{position:absolute;z-index:500;background:var(--panel);border:1px solid var(--line-2);border-radius:8px;box-shadow:var(--shadow)}
+
+.scen{left:12px;top:10px;width:370px;max-width:calc(100% - 330px);padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.scen-h{display:flex;justify-content:space-between;align-items:center}
+.scen-seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.scen-seg button{flex:1 1 auto;border:0;border-right:1px solid var(--line-2);background:transparent;padding:6px 6px;font-size:12.5px;font-family:var(--f-mono);cursor:pointer;white-space:nowrap;display:inline-flex;gap:5px;align-items:center;justify-content:center}
+.scen-seg button:first-child{font-family:var(--f-body)}
+.scen-seg button:last-child{border-right:0}
+.scen-seg button:hover{background:var(--panel-2)}
+.scen-seg button[aria-checked="true"]{background:var(--ink);color:var(--panel)}
+.scen-seg i{width:9px;height:9px;border-radius:2px;display:inline-block;box-shadow:0 0 0 1px var(--mark-ring)}
+.scen-info{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.scen-opts{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap}
+.scen-opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.scen-opts .sel{height:26px;flex:none;width:auto}
+.scen-opts input{accent-color:var(--accent);margin:0}
+.scen-empty{margin:0;font-size:12.5px;color:var(--ink-3)}
+.scen-first{font-size:12.5px;margin-bottom:6px}
+tr.scen-row-active td{background:var(--accent-soft)}
+.main.has-drawer .scen{max-width:calc(100% - 330px - 440px)}
+@media (max-width:900px){.scen{max-width:calc(100% - 290px)}}
+@media (max-width:620px){.scen{top:52px;left:8px;right:56px;width:auto;max-width:none;padding:8px 10px}.scen .scen-opts{display:none}.layers{right:56px}}
+
+.scen-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-2px 0 0}
+.scen-tabs button{border:0;background:transparent;padding:4px 6px 6px;font-size:12.5px;color:var(--ink-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;display:inline-flex;align-items:center;gap:5px}
+.scen-tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.dotact{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+.scen-seg button.sim{text-decoration:underline dotted;text-underline-offset:3px}
+.scen-note{font-size:11.5px;color:var(--warn)}
+.simtag{font-size:10.5px;color:var(--warn);font-weight:600}
+.scen-ficha-g+.scen-ficha-g{margin-top:12px}
+.summary .linkbtn{white-space:nowrap}
+.sw-site{background:var(--panel)!important;box-shadow:0 0 0 2.4px var(--ink)!important}
+.lg-site{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.st-ico{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:var(--station);color:var(--panel);font:600 10px/1 var(--f-mono);box-shadow:0 0 0 1.5px var(--panel),0 1px 3px rgba(0,0,0,.35);transform:rotate(0)}
+.st-mini{width:15px;height:15px;font-size:9px}
+.st-icon{background:none;border:0}
+
+.hy{gap:12px}
+.hy-time{position:sticky;top:-14px;z-index:2;background:var(--panel);margin:-14px -14px 0;padding:12px 14px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.hy-tl{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.hy-slider{display:flex;gap:8px;align-items:center}
+.hy-slider input{flex:1;accent-color:var(--accent)}
+.hy-tl2{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);padding-left:42px}
+.hy-card{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}
+.hy-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hy-h h3{margin:0}
+.hy-big{font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1;display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.hy-big small{font-size:14px;color:var(--ink-3);font-weight:600}
+.hy-big.sm{font-size:24px}
+.hy-sub{font-size:12px;color:var(--ink-2)}
+.hy-toggle{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;font-weight:600;cursor:pointer;padding:8px 10px;border-radius:6px;background:var(--accent-soft)}
+.hy-toggle input{accent-color:var(--accent);margin-top:2px}
+.hy-toggle .hint{display:block;font-weight:400;color:var(--ink-2);font-size:11.5px}
+.hy-proj .scen-seg button{font-family:var(--f-body)}
+.hy-proj{display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:8px}
+.hy-ptxt{margin:0;font-size:12.5px}
+.hy-prow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap}
+.hy-prow input{width:70px;height:26px;flex:none}
+.hy-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hy-kpis div{font-size:12px;color:var(--ink-2);display:flex;flex-direction:column}
+.hy-kpis b{font-family:var(--f-display);font-size:20px;color:var(--ink);line-height:1.05;font-variant-numeric:tabular-nums}
+.hy-kpis span{font-size:11px;color:var(--ink-3)}
+.hy .note{margin:0}
+.ch-wrap{position:relative}
+.ch-read{font-size:11.5px;color:var(--ink-3);min-height:16px;font-variant-numeric:tabular-nums}
+svg.ch{display:block;touch-action:none}
+.ch-grid{stroke:var(--line);stroke-width:1}
+.ch-ax{font:10px var(--f-body);fill:var(--ink-3)}
+.ch-line{stroke:var(--ink-2);stroke-width:1.6}
+.ch-line.main{stroke:var(--c1);stroke-width:2}
+.ch-line.proj{stroke:var(--c1);stroke-width:2;stroke-dasharray:4 3}
+.ch-line.out{stroke:var(--o3);stroke-width:1.5;stroke-dasharray:3 3}
+.ch-band{fill:var(--c1);opacity:.15}
+.ch-bar{fill:var(--c1)}
+.ch-thr{stroke-width:1;stroke-dasharray:2 3}
+.ch-thr.u1{stroke:var(--o1)} .ch-thr.u2{stroke:var(--o3)} .ch-thr.u3{stroke:var(--o4)}
+.ch-thrl{font:600 9.5px var(--f-body)}
+.ch-thrl.u1{fill:var(--o2)} .ch-thrl.u2{fill:var(--o3)} .ch-thrl.u3{fill:var(--o4)}
+.ch-now{stroke:var(--ink-3);stroke-width:1;stroke-dasharray:1 2}
+.ch-cursor{stroke:var(--ink);stroke-width:1}
+.ch-empty{font-size:12px;color:var(--ink-3);padding:10px 0}
+.umb{display:flex;flex-direction:column;gap:8px}
+.umb-row{border-left:3px solid var(--line-2);padding:2px 0 2px 10px;display:flex;flex-direction:column;gap:4px}
+.umb-u1{border-left-color:var(--o1)} .umb-u2{border-left-color:var(--o3)} .umb-u3{border-left-color:var(--o4)}
+.umb-a{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.umb-n{font-family:var(--f-display);font-weight:700;font-size:15px}
+.umb-c{font-size:12px;color:var(--ink-2);display:flex;gap:4px;align-items:center}
+.umb-c input{width:64px;height:24px;flex:none;padding:0 4px}
+.umb-b{font-size:12px;color:var(--ink-2)}
+.umb-c2{display:flex;justify-content:space-between;align-items:center;font-size:12.5px}
+.umb-acc{font-size:11.5px;color:var(--ink-3)}
+.st-list{display:flex;flex-direction:column}
+.st-row{display:grid;grid-template-columns:18px 42px 1fr auto;gap:8px;align-items:center;border:0;border-bottom:1px solid var(--line);background:transparent;padding:6px 0;text-align:left;cursor:pointer;font-size:12px}
+.st-row:hover{background:var(--panel-2)}
+.st-row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-2)}
+.st-row .vv{font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+.st-ico.off{background:var(--cgray)}
+.st-icon{position:relative}
+.st-lbl{display:none;position:absolute;left:50%;top:20px;transform:translateX(-50%);white-space:nowrap;font:600 10.5px var(--f-body);color:var(--station);text-shadow:0 0 3px var(--land),0 0 3px var(--land),0 0 3px var(--land)}
+#map.z-hi .st-lbl{display:block}
+.map-sat .st-lbl{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+.alertchip{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 14px;background:var(--warn-bg);color:var(--warn);font-size:12.5px;border-bottom:1px solid var(--line)}
+.legend{left:12px;bottom:28px;padding:10px 12px;width:248px;max-width:calc(100% - 24px)}
+.legend select{width:100%;margin-bottom:8px}
+.lg{display:flex;flex-direction:column;gap:4px}
+.lg-row{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:12.5px}
+.lg-row .sw{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1.5px var(--mark-ring)}
+.lg-row .c{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:12px}
+.lg-note{font-size:11px;color:var(--ink-3);margin-top:6px;line-height:1.35}
+.layers{right:58px;top:10px;width:250px;padding:0;overflow:hidden}
+.layers summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 12px;font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.03em}
+.layers summary::-webkit-details-marker{display:none}
+.layers summary svg{width:16px;height:16px}
+.layers .body{padding:4px 12px 12px;display:flex;flex-direction:column;gap:5px;border-top:1px solid var(--line)}
+.layers label{display:flex;gap:8px;align-items:center;font-size:12.5px;cursor:pointer}
+.layers .sub{margin-top:6px}
+.reflist{display:flex;flex-direction:column;gap:4px}
+.refitem{display:flex;align-items:center;gap:6px;font-size:12px}
+.refitem .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.refitem .x{border:0;background:none;color:var(--ink-3);cursor:pointer;padding:2px}
+.coords{right:12px;bottom:52px;padding:4px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--ink-2);pointer-events:none}
+.placing-banner{left:50%;top:12px;transform:translateX(-50%);padding:8px 10px 8px 14px;display:flex;align-items:center;gap:10px;font-size:13px;background:var(--ink);color:var(--panel);border-color:var(--ink);max-width:calc(100% - 24px)}
+.placing-banner .btn{height:28px;background:transparent;color:var(--panel);border-color:color-mix(in srgb,var(--panel) 40%,transparent)}
+.placing #map{cursor:crosshair}
+.placing .leaflet-container{cursor:crosshair}
+.pinicon{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent);border:2px solid var(--panel);box-shadow:var(--shadow);margin:-11px 0 0 0}
+
+/* ---------- ficha (cajón derecho) ---------- */
+.drawer{position:absolute;top:0;right:0;bottom:0;width:440px;max-width:100%;background:var(--panel);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:600;display:flex;flex-direction:column;min-height:0;transform:translateX(100%);transition:transform .18s ease}
+.drawer.open{transform:none}
+.main.has-drawer .leaflet-right,.main.has-drawer .layers,.main.has-drawer .coords{right:440px}
+.main.has-drawer .layers{right:498px}
+.main.has-drawer .coords{right:452px}
+@media (max-width:900px){.main.has-drawer .leaflet-right{right:0}.main.has-drawer .layers{right:58px}}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.dhead{padding:14px 16px 0;border-bottom:1px solid var(--line)}
+.dhead .r1{display:flex;align-items:flex-start;gap:8px}
+.dhead .code{font-family:var(--f-mono);font-weight:500;font-size:18px;letter-spacing:.01em}
+.dhead .where{font-size:13px;color:var(--ink-2);margin-top:2px}
+.dhead .tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 10px}
+.dhead .acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.dhead .close{margin-left:auto}
+.dbody{flex:1;overflow:auto;min-height:0;padding:4px 16px 24px}
+.grp{padding:14px 0 6px;border-bottom:1px solid var(--line)}
+.grp:last-child{border-bottom:0}
+.grp h4{margin:0 0 8px;font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+dl.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;margin:0}
+dl.kv dt{font-size:12.5px;color:var(--ink-3)}
+dl.kv dd{margin:0;font-size:13px;min-width:0;overflow-wrap:anywhere}
+dl.kv dd .empty-v{color:var(--ink-3)}
+.masked{letter-spacing:.15em;color:var(--ink-3)}
+.ivhbox{display:flex;gap:14px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.ivhnum{font-family:var(--f-display);font-weight:700;font-size:34px;line-height:.9}
+.ivhnum small{font-size:13px;color:var(--ink-3);font-weight:600}
+.gauge{flex:1}
+.gauge .g{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--o1) 0 35%,var(--o3) 35% 55%,var(--o4) 55%);position:relative}
+.gauge .g i{position:absolute;top:-4px;width:3px;height:16px;background:var(--ink);border-radius:2px;transform:translateX(-1px)}
+.gauge .ticks{position:relative;height:14px;font-size:10.5px;color:var(--ink-3);margin-top:4px;font-variant-numeric:tabular-nums}.gauge .ticks span{position:absolute;transform:translateX(-50%)}.gauge .ticks span:first-child{transform:none}.gauge .ticks span:last-child{transform:translateX(-100%)}
+.parts{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+.parts td{padding:4px 0;border-bottom:1px dashed var(--line)}
+.parts td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.parts td.v{color:var(--ink-3);padding:0 8px}
+.hist{display:flex;flex-direction:column}
+.hrow{padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.hrow .h1{display:flex;justify-content:space-between;gap:8px;color:var(--ink-3);font-size:11.5px}
+.hrow .h2{margin-top:3px}
+.hrow del{color:var(--bad);text-decoration:line-through;text-decoration-thickness:1px}
+.hrow ins{color:var(--good);text-decoration:none;font-weight:500}
+
+/* formulario */
+.form{display:flex;flex-direction:column}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fld label,.fld .lb{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.fld input,.fld select,.fld textarea{border:1px solid var(--line-2);border-radius:var(--r);background:var(--bg);padding:7px 9px;min-width:0;width:100%}
+.fld textarea{min-height:70px;resize:vertical}
+.fld .hint{font-size:11.5px;color:var(--ink-3)}
+.fld.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:999px;padding:3px 10px 3px 8px;font-size:12.5px;cursor:pointer;font-weight:400;color:var(--ink)}
+.checks input{width:auto;margin:0;accent-color:var(--accent)}
+.checks label:has(input:checked){background:var(--accent-soft);border-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.seg label{flex:1;text-align:center;padding:6px 0;cursor:pointer;font-size:12.5px;border-right:1px solid var(--line-2);font-weight:400;color:var(--ink)}
+.seg label:last-child{border-right:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--accent);color:var(--accent-ink)}
+.seg label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:-2px}
+.formbar{position:sticky;bottom:-24px;margin:12px -16px -24px;padding:12px 16px;background:var(--panel);border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.formbar .who{font-size:12px;color:var(--ink-3);margin-right:auto}
+.editor-box{padding:10px 12px;border-radius:8px;background:var(--warn-bg);margin:12px 0 4px;display:flex;flex-direction:column;gap:6px}
+.editor-box label{font-size:12.5px;font-weight:600;color:var(--warn)}
+.editor-box input{border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:7px 9px}
+.callout{padding:9px 11px;border-radius:8px;font-size:12.5px;background:var(--panel-2);color:var(--ink-2);margin-top:10px}
+.callout.warn{background:var(--warn-bg);color:var(--warn)}
+
+/* ---------- modales ---------- */
+.overlay{position:fixed;inset:0;z-index:2000;background:rgba(10,16,15,.45);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--panel);border-radius:10px;box-shadow:var(--shadow);width:min(760px,100%);max-height:100%;display:flex;flex-direction:column;min-height:0;border:1px solid var(--line-2)}
+.modal.narrow{width:min(520px,100%)}
+.modal.wide{width:min(980px,100%)}
+.mhead{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mhead h2{margin:0;font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:.01em;text-wrap:balance}
+.mhead .steps{font-size:12px;color:var(--ink-3);margin-left:6px}
+.mhead .close{margin-left:auto}
+.mbody{padding:16px 18px;overflow:auto;min-height:0}
+.mbody p{margin:0 0 10px;max-width:68ch}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.mfoot .spacer{margin-right:auto;font-size:12.5px;color:var(--ink-3)}
+.drop{border:1.5px dashed var(--line-2);border-radius:10px;padding:28px 18px;text-align:center;background:var(--bg);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop svg{width:30px;height:30px;color:var(--accent)}
+.drop strong{font-size:15px}
+.drop span{font-size:12.5px;color:var(--ink-3)}
+.fmtgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.fmt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--ink-2)}
+.fmt b{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.maptable-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;max-height:300px}
+.maptable td,.maptable th{white-space:nowrap}
+.maptable td.sample{color:var(--ink-3);max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.maptable select{height:28px;border:1px solid var(--line-2);border-radius:5px;background:var(--bg);font-size:12.5px;max-width:240px}
+.maptable tr.unmapped td:first-child{color:var(--ink-3)}
+.preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.pv{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.pv .n{font-family:var(--f-display);font-weight:700;font-size:24px;line-height:1}
+.pv .l{font-size:12px;color:var(--ink-3);margin-top:3px}
+.pv.warn{background:var(--warn-bg);border-color:transparent}
+.pv.warn .n,.pv.warn .l{color:var(--warn)}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.opts label{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
+.opts input{margin-top:3px;accent-color:var(--accent)}
+.opts small{display:block;color:var(--ink-3);font-size:12px}
+.issues{margin-top:12px;font-size:12.5px}
+.issues summary{cursor:pointer;color:var(--ink-2)}
+.issues ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
+.about h3{font-family:var(--f-display);font-weight:600;font-size:16px;letter-spacing:.02em;margin:16px 0 6px}
+.about ul{margin:0 0 6px;padding-left:18px;max-width:68ch}
+.about li{margin-bottom:4px}
+.toasts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:3000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:calc(100% - 32px)}
+.toast{background:var(--ink);color:var(--panel);padding:9px 14px;border-radius:8px;box-shadow:var(--shadow);font-size:13px;max-width:520px}
+.sidetoggle{display:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){.source{display:none}}
+@media (max-width:900px){
+  .main{grid-template-columns:1fr}
+  .side{position:absolute;inset:0 auto 0 0;width:min(380px,100%);transform:translateX(-102%);transition:transform .18s ease;box-shadow:var(--shadow);z-index:650}
+  .side.open{transform:none}
+  .sidetoggle{display:inline-flex}
+  .btn .lbl{display:none}
+  .tbar .btn:not(.keep){padding:0;width:34px;justify-content:center}
+  .drawer{width:100%}
+  .legend{width:200px;bottom:24px}
+  .layers{width:200px}
+  .brand .eyebrow:not(.sub){display:none}
+  .logo{height:36px}
+  .brand h1{font-size:20px}
+  .fmtgrid,.preview{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+  #btnHistory,#btnAbout{display:none}
+  .logo{height:28px}
+  .brandwrap{gap:8px}
+  .brand h1{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand .eyebrow.sub{font-size:10px}
+  .top{gap:8px}
+  .legend{left:8px;right:auto;width:170px;font-size:12px}
+  .coords{display:none}
+  .lg-note{display:none}
+  .stats .l{font-size:10.5px}
+  dl.kv{grid-template-columns:1fr}
+  dl.kv dt{margin-top:4px}
+  .bar{grid-template-columns:100px 1fr 30px}
+}
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <button class="btn iconbtn sidetoggle keep" id="btnSide" aria-label="Mostrar lista de fichas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+    <div class="brandwrap"><!--__LOGO__--><div class="brand">
+      <div class="eyebrow">Complejo Acaray–Yguazú · Gestión social</div>
+      <h1>Censo <span>Hidrosocial</span></h1>
+      <div class="eyebrow sub">Versión de prueba – Camilo Caballero Ocariz</div>
+    </div></div>
+    <div class="source" id="sourceChip" title=""></div>
+    <div class="tbar">
+      <button class="btn primary" id="btnImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg><span class="lbl">Cargar entrega</span></button>
+      <button class="btn" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="lbl">Nueva ficha</span></button>
+      <button class="btn" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg><span class="lbl">Exportar</span></button>
+      <button class="btn ghost" id="btnHistory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg><span class="lbl">Historial</span></button>
+      <button class="btn ghost iconbtn" id="btnAbout" aria-label="Acerca del prototipo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></button>
+    </div>
+  </header>
+
+  <div class="main" id="main">
+    <aside class="side" id="side" aria-label="Fichas del censo">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabList" aria-selected="true">Fichas</button>
+        <button class="tab" role="tab" id="tabSum" aria-selected="false">Resumen</button>
+        <button class="tab" role="tab" id="tabHy" aria-selected="false">Hidrología</button>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div id="paneList" style="display:flex;flex-direction:column;min-height:0;flex:1">
+        <div class="filters">
+          <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Buscar por código, localidad, distrito o referente" aria-label="Buscar fichas"></div>
+          <div class="row" id="fEmb"></div>
+          <div class="row" id="fOrig"></div>
+          <div class="fgrid">
+            <select class="sel" id="fDist" aria-label="Distrito"></select>
+            <select class="sel" id="fTipo" aria-label="Tipo de unidad"></select>
+            <select class="sel" id="fEstado" aria-label="Estado de la ficha"></select>
+            <select class="sel" id="fFranja" aria-label="Franja de dominio"></select>
+          </div>
+          <div class="row" style="justify-content:space-between"><div class="row" id="fIvh"></div><button class="linkbtn" id="clearF">Limpiar filtros</button></div>
+        </div>
+        <div class="listhead"><span id="listCount"></span><span id="listSort">Ordenadas por IVH</span></div>
+        <div class="alertchip" id="alertChip" hidden></div>
+        <div class="list" id="list"></div>
+      </div>
+      <div class="summary" id="paneSum" hidden></div>
+      <div class="summary hy" id="paneHy" hidden></div>
+    </aside>
+
+    <section class="mapwrap" id="mapwrap">
+      <div id="map" aria-label="Mapa del censo"></div>
+      <details class="mcard layers" id="layers">
+        <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>Capas del mapa</summary>
+        <div class="body">
+          <div class="flabel" style="margin-top:6px">Fondo</div>
+          <label><input type="radio" name="base" value="carto" checked> Cartografía base (sin conexión)</label>
+          <label><input type="radio" name="base" value="sat"> Imagen satelital</label>
+          <label><input type="radio" name="base" value="osm"> Calles (OpenStreetMap)</label>
+          <div class="flabel sub">Capas</div>
+          <label><input type="checkbox" id="lyDist" checked> Límites distritales</label>
+          <label><input type="checkbox" id="lyWater" checked> Embalses y ríos</label>
+          <label><input type="checkbox" id="lyRoads" checked> Rutas</label>
+          <label><input type="checkbox" id="lyLabels" checked> Nombres</label>
+          <label><input type="checkbox" id="lyStations" checked> <span class="st-ico st-mini" aria-hidden="true">H</span> Estaciones hidrometeorológicas</label>
+          <span style="font-size:11px;color:var(--ink-3);margin-left:24px">H hidrométrica · P pluviométrica · M meteorológica · L limnimétrica</span>
+          <div class="flabel sub">Capas de referencia</div>
+          <div class="reflist" id="reflist"></div>
+          <button class="btn small" id="btnRef" style="align-self:flex-start;margin-top:2px">Agregar capa (GeoJSON o KML)</button>
+          <input type="file" id="refFile" accept=".geojson,.json,.kml" hidden>
+        </div>
+      </details>
+      <div class="mcard scen" id="scenCard"></div>
+      <div class="mcard legend" id="legend"></div>
+      <div class="mcard coords" id="coords" hidden></div>
+    </section>
+
+    <aside class="drawer" id="drawer" aria-label="Ficha seleccionada"></aside>
+  </div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<input type="file" id="dataFile" accept=".xlsx,.xls,.csv,.geojson,.json" hidden>
+<input type="file" id="hyFile" accept=".csv,.xlsx,.xls" hidden>
+<input type="file" id="scenFile" accept=".kml,.kmz,.geojson,.json" multiple hidden>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tmcw/togeojson@7.1.2/dist/togeojson.umd.js"></script>
+<script>
+"use strict";
+/* ============================================================
+   DATOS EMBEBIDOS
+   ============================================================ */
+const BASEMAP = /*__BASEMAP__*/null;
+const SAMPLE = /*__SAMPLE__*/[];
+const SCENARIOS = /*__SCENARIOS__*/[];
+const SITES = /*__SITES__*/[];
+const SURVEYS = /*__SURVEYS__*/[];
+const STATIONS = /*__STATIONS__*/[];
+const HYDRO = /*__HYDRO__*/null;
+const STORE_KEY = "censo-hidrosocial-v1";
+const AREA = {minLat:-25.85, maxLat:-24.70, minLon:-56.05, maxLon:-54.40};
+
+/* ============================================================
+   ESQUEMA DE LA FICHA
+   ============================================================ */
+const GROUPS = [
+  ["ubicacion","Identificación y ubicación"],
+  ["unidad","Hogar o unidad relevada"],
+  ["territorio","Tenencia y territorio"],
+  ["agua","Agua y usos del embalse"],
+  ["percepcion","Percepción del descenso programado"],
+  ["seguimiento","Seguimiento"]
+];
+const OPT = {
+  embalse:["Yguazú","Acaray"],
+  tipo_unidad:["Hogar","Hogar con unidad productiva","Unidad productiva","Comunidad indígena","Balneario o recreativo","Institución","Sitio urbano o civil","Embarcadero o balsa"],
+  sexo:["Mujer","Hombre"],
+  tenencia:["Título de propiedad","Derecho de ocupación (INDERT)","Ocupación sin documento","Arrendamiento","Préstamo o cuidado","Propiedad comunitaria indígena","Por verificar"],
+  franja:["Dentro","Colindante","Fuera","Por verificar"],
+  fuente:["Junta de Saneamiento","Aguatería comunitaria","Pozo profundo comunitario","Pozo profundo particular","Pozo somero propio","Aljibe o agua de lluvia","Toma directa del embalse","Compra de agua"],
+  usos:["Consumo humano","Higiene y lavado","Abrevadero de ganado","Riego","Pesca de subsistencia","Pesca comercial","Recreación","Turismo","Acuicultura","Transporte o cruce"],
+  actividad:["Agricultura familiar","Ganadería menor","Pesca","Turismo y recreación","Comercio","Trabajo asalariado","Producción mecanizada","Otra"],
+  nivel:["Alta","Media","Baja","Ninguna"],
+  sino:["Sí","No"],
+  preoc:["1","2","3","4","5"],
+  afect:["Pozo somero","Pesca","Acceso del ganado al agua","Cruce en balsa","Turismo","Riego","Toma de agua","Ninguna"],
+  estado:["Relevada","Validada","Requiere revisita","Actualizada en gabinete","Visitada por el equipo"]
+};
+const F = (key,label,group,type,extra={}) => Object.assign({key,label,group,type},extra);
+const SCHEMA = [
+  F("codigo","Código de ficha","ubicacion","text",{aliases:["cod","id_ficha","nro_ficha","numero_ficha","ficha","code","codigo_ficha"],readonlyEdit:true}),
+  F("fecha_relevamiento","Fecha de relevamiento","ubicacion","date",{aliases:["fecha","fecha_encuesta","today","date"]}),
+  F("encuestador","Encuestador/a","ubicacion","text",{aliases:["encuestadora","enumerador","username","_submitted_by"]}),
+  F("embalse","Embalse","ubicacion","select",{options:OPT.embalse,aliases:["reservorio","lago"]}),
+  F("departamento","Departamento","ubicacion","text",{aliases:["depto","dpto"]}),
+  F("distrito","Distrito","ubicacion","text",{aliases:["municipio"]}),
+  F("localidad","Localidad o compañía","ubicacion","text",{aliases:["compania","comunidad","barrio","asentamiento","paraje","sector"]}),
+  F("latitud","Latitud","ubicacion","coord",{aliases:["lat","latitude","y","_gps_latitude","gps_latitude","coord_y","norte","northing"]}),
+  F("longitud","Longitud","ubicacion","coord",{aliases:["lon","lng","long","longitude","x","_gps_longitude","gps_longitude","coord_x","este","easting"]}),
+  F("precision_gps_m","Precisión GPS (m)","ubicacion","number",{aliases:["precision","_gps_precision","gps_precision","accuracy","precision_m"]}),
+  F("tipo_unidad","Tipo de unidad","unidad","select",{options:OPT.tipo_unidad,aliases:["tipo","tipo_de_unidad","unidad"]}),
+  F("nombre_sitio","Nombre del sitio o establecimiento","unidad","text",{aliases:["sitio","establecimiento","nombre_del_sitio","nombre_establecimiento","name"]}),
+  F("categoria_sitio","Categoría del sitio","unidad","text",{aliases:["categoria","categoria_del_sitio"]}),
+  F("nombre_referente","Nombre del referente","unidad","text",{sensitive:true,aliases:["nombre","referente","jefe_hogar","jefa_hogar","nombre_jefe","informante","nombre_informante","nombre_y_apellido"]}),
+  F("sexo_jefatura","Jefatura del hogar","unidad","select",{options:OPT.sexo,aliases:["sexo","sexo_jefe","jefatura"]}),
+  F("integrantes","Integrantes","unidad","number",{aliases:["n_integrantes","miembros","personas","cantidad_integrantes","total_personas"]}),
+  F("menores_14","Menores de 14 años","unidad","number",{aliases:["menores","ninos"]}),
+  F("mayores_65","Mayores de 65 años","unidad","number",{aliases:["mayores","adultos_mayores"]}),
+  F("tenencia","Tenencia del terreno","territorio","select",{options:OPT.tenencia,aliases:["tenencia_tierra","situacion_tenencia","tenencia_del_terreno"]}),
+  F("franja_dominio","Relación con la franja de dominio","territorio","select",{options:OPT.franja,aliases:["franja","franja_de_dominio","ubicacion_franja"]}),
+  F("distancia_costa_m","Distancia a la costa (m)","territorio","number",{aliases:["distancia_costa","distancia_al_embalse","dist_costa"]}),
+  F("fuente_agua_consumo","Fuente de agua para consumo","agua","select",{options:OPT.fuente,aliases:["fuente_agua","fuente_de_agua","abastecimiento_agua"]}),
+  F("usos_agua","Usos del agua del embalse","agua","multi",{options:OPT.usos,aliases:["usos","usos_del_agua","uso_agua"]}),
+  F("actividad_principal","Actividad principal","agua","select",{options:OPT.actividad,aliases:["actividad","actividad_economica","ocupacion_principal"]}),
+  F("dependencia_embalse","Dependencia económica del embalse","agua","select",{options:OPT.nivel,aliases:["dependencia","dependencia_economica"]}),
+  F("conoce_descenso","Conoce el descenso programado","percepcion","select",{options:OPT.sino,aliases:["conoce_desembalse","informado_descenso","conoce_el_descenso","conoce_descenso_programado"]}),
+  F("preocupacion_descenso","Nivel de preocupación (1 a 5)","percepcion","scale",{options:OPT.preoc,aliases:["preocupacion","nivel_preocupacion"]}),
+  F("afectaciones_previstas","Afectaciones previstas","percepcion","multi",{options:OPT.afect,aliases:["afectaciones","afectacion_prevista","impactos_previstos"]}),
+  F("reclamo_previo","Presentó reclamos anteriores","percepcion","select",{options:OPT.sino,aliases:["reclamo","reclamos","queja_previa"]}),
+  F("estado_ficha","Estado de la ficha","seguimiento","select",{options:OPT.estado,aliases:["estado","estado_registro"]}),
+  F("observaciones","Observaciones","seguimiento","textarea",{aliases:["obs","comentarios","notas","observacion"]})
+];
+const BYKEY = Object.fromEntries(SCHEMA.map(f=>[f.key,f]));
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+const isEmpty = v => v === undefined || v === null || String(v).trim() === "";
+const splitMulti = v => isEmpty(v) ? [] : String(v).split(/\s*[;|,]\s*/).filter(Boolean);
+const nowISO = () => new Date().toISOString();
+const fmtDT = iso => { try { const d=new Date(iso); return d.toLocaleDateString("es-PY",{day:"2-digit",month:"2-digit",year:"numeric"})+" "+d.toLocaleTimeString("es-PY",{hour:"2-digit",minute:"2-digit"}); } catch(e){ return iso; } };
+const fmtD = s => { if (isEmpty(s)) return ""; const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m?`${m[3]}/${m[2]}/${m[1]}`:String(s); };
+function parseNum(v){
+  if (typeof v === "number") return Number.isFinite(v)?v:"";
+  if (isEmpty(v)) return "";
+  let s = String(v).trim().replace(/\s/g,"");
+  if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g,"").replace(",",".");
+  else s = s.replace(",",".");
+  const n = Number(s); return Number.isFinite(n)?n:"";
+}
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; $("#toasts").appendChild(t); setTimeout(()=>t.remove(),4200); }
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+const ICON = {
+  x:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>',
+  move:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>'
+};
+
+/* ============================================================
+   GEOMETRÍA
+   ============================================================ */
+function pipRing(lat,lon,ring){ let ins=false; for(let i=0,j=ring.length-1;i<ring.length;j=i++){ const xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1]; if(((yi>lat)!==(yj>lat)) && (lon < (xj-xi)*(lat-yi)/(yj-yi)+xi)) ins=!ins; } return ins; }
+function pipPoly(lat,lon,poly){ if(!pipRing(lat,lon,poly[0])) return false; for(let k=1;k<poly.length;k++) if(pipRing(lat,lon,poly[k])) return false; return true; }
+function pipGeom(lat,lon,g){ if(!g) return false; if(g.type==="Polygon") return pipPoly(lat,lon,g.coordinates); if(g.type==="MultiPolygon") return g.coordinates.some(p=>pipPoly(lat,lon,p)); return false; }
+const KX = 111320*Math.cos(25.3*Math.PI/180), KY = 110570;
+function segDist(px,py,ax,ay,bx,by){ const dx=bx-ax, dy=by-ay; const l=dx*dx+dy*dy; let t=l?((px-ax)*dx+(py-ay)*dy)/l:0; t=Math.max(0,Math.min(1,t)); const x=ax+t*dx-px, y=ay+t*dy-py; return Math.sqrt(x*x+y*y); }
+function distToLines(lat,lon,lines){ const px=lon*KX, py=lat*KY; let m=Infinity; for(const ln of lines) for(let i=1;i<ln.length;i++){ const d=segDist(px,py,ln[i-1][0]*KX,ln[i-1][1]*KY,ln[i][0]*KX,ln[i][1]*KY); if(d<m) m=d; } return m; }
+function linesOf(g){ if(!g) return []; if(g.type==="Polygon") return g.coordinates; if(g.type==="MultiPolygon") return g.coordinates.flat(); if(g.type==="LineString") return [g.coordinates]; if(g.type==="MultiLineString") return g.coordinates; return []; }
+const LAKE_G = BASEMAP.embalseYguazu.features[0].geometry;
+const LAKE_LINES = linesOf(LAKE_G);
+const CAUCE_G = BASEMAP.cauceAcaray.features[0].geometry;
+const ACARAY_LINES = linesOf(CAUCE_G);
+function districtAt(lat,lon){ for(const f of BASEMAP.distritos.features) if(pipGeom(lat,lon,f.geometry)) return {distrito:f.properties.nombre, departamento:f.properties.depto}; return null; }
+function waterContext(lat,lon){
+  const inLake = pipGeom(lat,lon,LAKE_G);
+  const dY = inLake?0:distToLines(lat,lon,LAKE_LINES);
+  const inCauce = pipGeom(lat,lon,CAUCE_G);
+  const dA = inCauce?0:distToLines(lat,lon,ACARAY_LINES);
+  return dY <= dA ? {embalse:"Yguazú", dist:Math.round(dY), inLake} : {embalse:"Acaray", dist:Math.round(dA), inLake:inCauce};
+}
+const hasCoords = r => r.latitud!=="" && r.longitud!=="" && Number.isFinite(+r.latitud) && Number.isFinite(+r.longitud);
+const inArea = (lat,lon) => lat>=AREA.minLat && lat<=AREA.maxLat && lon>=AREA.minLon && lon<=AREA.maxLon;
+
+/* UTM (WGS84) → geográficas, hemisferio sur */
+function utmToLatLon(E,N,zone=21){
+  const a=6378137,f=1/298.257223563,k0=0.9996,e2=f*(2-f),ep2=e2/(1-e2);
+  const x=E-500000, y=N-10000000, lon0=(zone*6-183)*Math.PI/180;
+  const M=y/k0, mu=M/(a*(1-e2/4-3*e2*e2/64-5*e2**3/256));
+  const e1=(1-Math.sqrt(1-e2))/(1+Math.sqrt(1-e2));
+  const p1=mu+(3*e1/2-27*e1**3/32)*Math.sin(2*mu)+(21*e1*e1/16-55*e1**4/32)*Math.sin(4*mu)+(151*e1**3/96)*Math.sin(6*mu)+(1097*e1**4/512)*Math.sin(8*mu);
+  const N1=a/Math.sqrt(1-e2*Math.sin(p1)**2), T1=Math.tan(p1)**2, C1=ep2*Math.cos(p1)**2, R1=a*(1-e2)/(1-e2*Math.sin(p1)**2)**1.5, D=x/(N1*k0);
+  const lat=p1-(N1*Math.tan(p1)/R1)*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*ep2)*D**4/24+(61+90*T1+298*C1+45*T1*T1-252*ep2-3*C1*C1)*D**6/720);
+  const lon=lon0+(D-(1+2*T1+C1)*D**3/6+(5-2*C1+28*T1-3*C1*C1+8*ep2+24*T1*T1)*D**5/120)/Math.cos(p1);
+  return [lat*180/Math.PI, lon*180/Math.PI];
+}
+
+/* ============================================================
+   ÍNDICE DE VULNERABILIDAD HIDROSOCIAL (ilustrativo)
+   ============================================================ */
+const IVH_W = {
+  dependencia_embalse:{label:"Dependencia económica del embalse",max:30,map:{"Alta":30,"Media":18,"Baja":6,"Ninguna":0}},
+  fuente_agua_consumo:{label:"Fuente de agua para consumo",max:20,map:{"Toma directa del embalse":20,"Pozo somero propio":15,"Aljibe o agua de lluvia":10,"Compra de agua":8,"Pozo profundo comunitario":4,"Pozo profundo particular":4,"Aguatería comunitaria":2,"Junta de Saneamiento":0}},
+  tenencia:{label:"Seguridad de la tenencia",max:15,map:{"Ocupación sin documento":15,"Propiedad comunitaria indígena":12,"Préstamo o cuidado":10,"Derecho de ocupación (INDERT)":8,"Arrendamiento":8,"Por verificar":8,"Título de propiedad":0}},
+  franja_dominio:{label:"Relación con la franja de dominio",max:15,map:{"Dentro":15,"Colindante":8,"Por verificar":6,"Fuera":0}}
+};
+function ivh(r){
+  const parts=[]; let s=0, known=0;
+  for(const [k,w] of Object.entries(IVH_W)){
+    const v=r[k]; const p = (v in w.map) ? w.map[v] : null;
+    if(p!==null) known++;
+    parts.push({label:w.label, value:isEmpty(v)?"Sin dato":v, pts:p??0, max:w.max}); s+=p??0;
+  }
+  const n=+r.integrantes, dep=(+r.menores_14||0)+(+r.mayores_65||0);
+  const comp = n>0 ? Math.round(Math.min(1,dep/n)*10) : 0;
+  parts.push({label:"Menores de 14 y mayores de 65 en el hogar", value:n>0?`${dep} de ${n}`:"No aplica", pts:comp, max:10}); s+=comp;
+  const jf = r.sexo_jefatura==="Mujer"?5:0; parts.push({label:"Jefatura femenina", value:r.sexo_jefatura||"No aplica", pts:jf, max:5}); s+=jf;
+  const cd = r.conoce_descenso==="No"?5:0; parts.push({label:"No conoce el descenso programado", value:r.conoce_descenso||"Sin dato", pts:cd, max:5}); s+=cd;
+  if(known<2) return {score:null, nivel:"Sin dato", parts};
+  return {score:s, nivel: s>=55?"Alta":s>=35?"Media":"Baja", parts};
+}
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+const state = {
+  records:[], history:[], editor:"", source:{label:"", demo:true, at:""},
+  filters:{q:"",embalse:"",distrito:"",tipo:"",estado:"",franja:"",ivh:"",stat:"",origen:"",alerta:""},
+  colorBy:"ivh", selected:null, showSensitive:false, mode:"view", listLimit:150, tab:"list",
+  editing:null, draft:null, moving:null, refLayers:[]
+};
+function blank(){ const r={}; for(const f of SCHEMA) r[f.key]=""; r._extra={}; return r; }
+function fromSample(o){ const r=blank(); for(const k in o) if(k in BYKEY) r[k]=o[k]; r._creado=nowISO(); r._origen="Entrega 1 (ejemplo)"; return r; }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify({records:state.records,history:state.history,editor:state.editor,source:state.source,colorBy:state.colorBy})); }catch(e){ if(!save.warned){ save.warned=true; toast("No se pudo guardar en este navegador. Exportá el archivo para no perder cambios."); } } }
+const saveSoon = debounce(save, 400);
+function load(){
+  try{ const s=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(s && Array.isArray(s.records)){ state.records=s.records.map(r=>Object.assign(blank(),r)); state.history=s.history||[]; state.editor=s.editor||""; state.source=s.source||state.source; state.colorBy=s.colorBy||"ivh"; if(mergeSites()) save(); return; } }catch(e){}
+  resetSample();
+}
+const esSitio = r => /^(SI|EN)-/.test(String(r.codigo||""));
+const origenDe = r => /^SI-/.test(String(r.codigo||""))?"sitio":/^EN-/.test(String(r.codigo||""))?"encuesta":"censo";
+function fromSite(o){ const r=blank(); for(const k in o) if(k in BYKEY) r[k]=o[k]; r._extra=Object.assign({},o._extra||{}); r._creado=nowISO(); r._origen=/^EN-/.test(o.codigo)?"Encuestas de depleción (ago. 2025)":"Sitios de interés visitados (KMZ del equipo)"; return r; }
+function mergeSites(){
+  const have=byCode(); let n=0;
+  for(const o of SITES){ if(have.has(o.codigo.toUpperCase())) continue; state.records.push(fromSite(o)); n++; }
+  if(n) state.history.push({at:nowISO(), codigo:"*", campo:"Sitios de interés incorporados", campoKey:"", antes:"", despues:`${n} sitios visitados`, editor:"Sistema", origen:"Sitios de interés del Embalse Yguazú (KMZ)"});
+  let m=0;
+  for(const o of SURVEYS){ if(have.has(o.codigo.toUpperCase())) continue; state.records.push(fromSite(o)); m++; }
+  if(m) state.history.push({at:nowISO(), codigo:"*", campo:"Encuestas de depleción incorporadas", campoKey:"", antes:"", despues:`${m} encuestas (acceso al agua, agricultura y ganadería, pesca y otras observaciones)`, editor:"Sistema", origen:"Resultados de encuestas Depleción ago. 2025 (Excel)"});
+  return n+m;
+}
+function resetSample(){
+  state.records = SAMPLE.map(fromSample).concat(SITES.map(fromSite), SURVEYS.map(fromSite));
+  state.history = [{at:nowISO(), codigo:"*", campo:"Carga inicial", antes:"", despues:`${SAMPLE.length} fichas`, editor:"Sistema", origen:"Entrega 1 de ejemplo (datos ficticios)"},{at:nowISO(), codigo:"*", campo:"Sitios de interés incorporados", antes:"", despues:`${SITES.length} sitios visitados`, editor:"Sistema", origen:"Sitios de interés del Embalse Yguazú (KMZ)"},{at:nowISO(), codigo:"*", campo:"Encuestas de depleción incorporadas", antes:"", despues:`${SURVEYS.length} encuestas`, editor:"Sistema", origen:"Resultados de encuestas Depleción ago. 2025 (Excel)"}];
+  state.source = {label:"Entrega 1 · datos ficticios de ejemplo", demo:true, at:nowISO()};
+}
+const byCode = () => new Map(state.records.map(r=>[String(r.codigo).trim().toUpperCase(), r]));
+
+/* ============================================================
+   COLOREADO
+   ============================================================ */
+const TIPO_G = t => t==="Hogar"||t==="Hogar con unidad productiva" ? "Hogares" : t==="Unidad productiva" ? "Unidades productivas" : isEmpty(t) ? "Sin dato" : "Uso colectivo";
+const FUENTE_G = f => ["Junta de Saneamiento","Pozo profundo comunitario","Pozo profundo particular","Aguatería comunitaria"].includes(f) ? "Red o pozo profundo" : ["Pozo somero propio","Aljibe o agua de lluvia"].includes(f) ? "Pozo somero o aljibe" : ["Toma directa del embalse","Compra de agua"].includes(f) ? "Embalse o compra" : "Sin dato";
+const COLOR_BY = {
+  exposicion:{get label(){ const a=activeScen(); return a?`Exposición a ${scenName(a)}`:"Exposición al escenario"; }, get:r=>{ const a=activeScen(); return a?expoStatus(a,r):"Sin dato"; }, get classes(){ return [["Dentro del área","--o4"],[`A menos de ${scen.margin} m`,"--o2"],["Fuera","--cgray"],["Sin ubicación","--cgray"]]; }, note:"Situación de cada ficha respecto del área de agua del escenario activo."},
+  ivh:{label:"Vulnerabilidad hidrosocial (IVH)", get:r=>ivh(r).nivel, classes:[["Alta","--o4"],["Media","--o3"],["Baja","--o1"],["Sin dato","--cgray"]], note:"Índice ilustrativo de 0 a 100: alta desde 55, media desde 35. El detalle está en cada ficha."},
+  embalse:{label:"Embalse", get:r=>r.embalse||"Sin dato", classes:[["Yguazú","--c1"],["Acaray","--c2"],["Sin dato","--cgray"]]},
+  franja:{label:"Franja de dominio", get:r=>r.franja_dominio||"Sin dato", classes:[["Dentro","--o4"],["Colindante","--o2"],["Fuera","--o1"],["Por verificar","--cgray"],["Sin dato","--cgray"]]},
+  dependencia:{label:"Dependencia del embalse", get:r=>r.dependencia_embalse||"Sin dato", classes:[["Alta","--o4"],["Media","--o3"],["Baja","--o2"],["Ninguna","--o1"],["Sin dato","--cgray"]]},
+  fuente:{label:"Fuente de agua para consumo", get:r=>FUENTE_G(r.fuente_agua_consumo), classes:[["Embalse o compra","--c2"],["Pozo somero o aljibe","--c1"],["Red o pozo profundo","--c3"],["Sin dato","--cgray"]]},
+  tipo:{label:"Tipo de unidad", get:r=>TIPO_G(r.tipo_unidad), classes:[["Hogares","--c1"],["Unidades productivas","--c2"],["Uso colectivo","--c3"],["Sin dato","--cgray"]], note:"Uso colectivo agrupa comunidades indígenas, balnearios, instituciones y embarcaderos."},
+  estado:{label:"Estado de la ficha", get:r=>r.estado_ficha||"Sin dato", classes:[["Relevada","--c1"],["Validada","--c3"],["Requiere revisita","--c2"],["Actualizada en gabinete","--cgray"],["Visitada por el equipo","--o3"],["Sin dato","--cgray"]]}
+};
+let PALETTE = {};
+function readPalette(){ PALETTE={}; for(const v of ["--o1","--o2","--o3","--o4","--c1","--c2","--c3","--cgray","--mark-ring","--accent","--water","--water-line","--boundary","--land","--road","--ink","--scen","--water-lvl"]) PALETTE[v]=cssVar(v); }
+function colorOf(r){ const cb=COLOR_BY[state.colorBy]; const v=cb.get(r); const c=cb.classes.find(x=>x[0]===v); return PALETTE[c?c[1]:"--cgray"]; }
+
+/* ============================================================
+   FILTROS
+   ============================================================ */
+function matches(r, skipStat){
+  const f=state.filters;
+  if(f.embalse && r.embalse!==f.embalse) return false;
+  if(f.distrito && r.distrito!==f.distrito) return false;
+  if(f.tipo && r.tipo_unidad!==f.tipo) return false;
+  if(f.estado && r.estado_ficha!==f.estado) return false;
+  if(f.franja && r.franja_dominio!==f.franja) return false;
+  if(f.origen && origenDe(r)!==f.origen) return false;
+  if(f.ivh && ivh(r).nivel!==f.ivh) return false;
+  if(f.alerta){ const set=hy.alertSets[f.alerta]||umbralMembers(hy.umbrales.find(u=>u.id===f.alerta)); if(!set.has(r.codigo)) return false; }
+  if(!skipStat && f.stat){
+    if(f.stat==="alta" && ivh(r).nivel!=="Alta") return false;
+    if(f.stat==="dentro" && r.franja_dominio!=="Dentro") return false;
+    if(f.stat==="revisita" && r.estado_ficha!=="Requiere revisita") return false;
+    if(f.stat==="alertas" && !alertsOf(r).length) return false;
+    if(f.stat==="expuestas"){ const a=activeScen(); const e=a&&expo(a,r); if(!e || !(e.in || e.d<=scen.margin)) return false; }
+  }
+  if(f.q && /^[a-z]{2}-[a-z]{2}-?\d*/i.test(f.q.trim())){ if(!String(r.codigo).toUpperCase().startsWith(f.q.trim().toUpperCase())) return false; }
+  else if(f.q){ const q=norm(f.q); const hay=norm([r.codigo,r.nombre_sitio,r.categoria_sitio,r.localidad,r.distrito,r.departamento,r.nombre_referente,r.observaciones].join(" ")); if(!q.split("_").every(t=>hay.includes(t))) return false; }
+  return true;
+}
+function alertsOf(r){
+  const a=[];
+  if(!hasCoords(r)) a.push("Sin coordenadas");
+  else if(!inArea(+r.latitud,+r.longitud)) a.push("Coordenadas fuera del área del censo");
+  return a;
+}
+const visible = () => state.records.filter(r=>matches(r));
+
+/* ============================================================
+   MAPA
+   ============================================================ */
+let map, canvasR, markerLayer, selRing, baseLayers={}, overlay={}, tileLayer=null, labelMarkers=[], moveMarker=null;
+const markers = new Map();
+function initMap(){
+  map = L.map("map",{zoomControl:false, preferCanvas:true, minZoom:8, maxZoom:18, attributionControl:true, maxBounds:[[-26.4,-56.9],[-24.2,-53.9]]});
+  L.control.zoom({position:"topright"}).addTo(map);
+  L.control.scale({position:"bottomright", imperial:false, maxWidth:110}).addTo(map);
+  map.attributionControl.setPrefix(false);
+  for(const [n,z] of [["land",210],["water",320],["roads",330],["scen",345],["ref",380],["labels",460],["stations",470],["sel",640]]){ const p=map.createPane(n); p.style.zIndex=z; if(n==="labels"||n==="land"||n==="scen") p.style.pointerEvents="none"; }
+  canvasR = L.canvas({padding:.3});
+  buildBase();
+  markerLayer = L.layerGroup().addTo(map);
+  selRing = L.circleMarker([0,0],{pane:"sel",radius:12,weight:3,fill:false,interactive:false,opacity:0}).addTo(map);
+  map.on("mousemove", e=>{ $("#coords").hidden=false; $("#coords").textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`; });
+  map.on("click", onMapClick);
+  map.on("zoomend", updateLabels);
+  map.attributionControl.addAttribution("Límites: geoBoundaries (CC BY 4.0) · Embalse, ríos y rutas: Natural Earth");
+}
+function buildBase(){
+  const P = PALETTE;
+  overlay.dist = L.geoJSON(BASEMAP.distritos,{pane:"land",interactive:false,style:()=>({color:P["--boundary"],weight:1,fillColor:P["--land"],fillOpacity:1,dashArray:null})}).addTo(map);
+  overlay.water = L.layerGroup([
+    overlay.lakeL=L.geoJSON(BASEMAP.embalseYguazu,{pane:"water",interactive:false,style:()=>({color:P["--water-line"],weight:1,fillColor:P["--water"],fillOpacity:1})}),
+    overlay.cauceL=L.geoJSON(BASEMAP.cauceAcaray,{pane:"water",interactive:false,style:()=>({color:P["--water-line"],weight:.8,fillColor:P["--water"],fillOpacity:1})}),
+    L.geoJSON(BASEMAP.rios,{pane:"water",interactive:false,style:f=>({color:P["--water-line"],weight:f.properties.nombre==="Río Paraná"?3:2,opacity:.9})})
+  ]).addTo(map);
+  overlay.roads = L.geoJSON(BASEMAP.rutas,{pane:"roads",interactive:false,style:f=>({color:P["--road"],weight:f.properties.jerarquia==="principal"?2.2:1.2,opacity:.9})}).addTo(map);
+  overlay.dams = L.layerGroup(BASEMAP.presas.map(d=>L.marker([d.lat,d.lon],{pane:"labels",interactive:true,keyboard:false,icon:L.divIcon({className:"dam",iconSize:[16,16],html:`<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 14 13H2Z" fill="${P["--ink"]}" stroke="${P["--land"]}" stroke-width="1.5"/></svg>`})}).bindTooltip(`<b>${esc(d.nombre)}</b><br>${esc(d.nota)}`,{direction:"top",offset:[0,-6]}))).addTo(map);
+  overlay.labels = L.layerGroup();
+  labelMarkers = BASEMAP.distritos.features.map(f=>L.marker(f.properties.lp,{pane:"labels",interactive:false,keyboard:false,icon:L.divIcon({className:"",iconSize:[0,0],html:`<div class="dlabel">${esc(f.properties.nombre)}</div>`})}));
+  labelMarkers.forEach(m=>overlay.labels.addLayer(m));
+  overlay.labels.addLayer(L.marker([-25.2844,-55.1964],{pane:"labels",interactive:false,keyboard:false,icon:L.divIcon({className:"",iconSize:[0,0],html:'<div class="wlabel">Embalse Yguazú</div>'})}));
+  overlay.labels.addTo(map);
+}
+function restyleBase(){
+  readPalette();
+  const sat = state.base==="sat" || state.base==="osm";
+  overlay.dist.setStyle({color: sat?"#ffffff":PALETTE["--boundary"], weight: sat?1.2:1, fillColor:PALETTE["--land"], fillOpacity: sat?0:1, opacity: sat?.7:1});
+  overlay.water.eachLayer(l=>l.setStyle && l.setStyle(f=> f && f.geometry && f.geometry.type.includes("Polygon") ? {color:PALETTE["--water-line"],fillColor:PALETTE["--water"],fillOpacity: sat?0:1, opacity: sat?0:1} : {color:PALETTE["--water-line"], opacity: sat?0:.9}));
+  overlay.roads.setStyle({color:PALETTE["--road"]});
+  $("#map").classList.toggle("map-sat", sat);
+  renderMarkers(); if(typeof drawScen==="function" && scen.list.length) drawScen();
+}
+function updateLabels(){ const z=map.getZoom(); $("#map").classList.toggle("z-hi", z>=10); const show=$("#lyLabels").checked && z>=9; if(show && !map.hasLayer(overlay.labels)) map.addLayer(overlay.labels); if(!show && map.hasLayer(overlay.labels)) map.removeLayer(overlay.labels); if(show) requestAnimationFrame(declutter); const r=z>=12?8:z>=10?6.5:5; markerLayer.eachLayer(m=>m.setRadius(r)); state.radius=r; }
+function declutter(){
+  const placed=[]; const els=[...document.querySelectorAll(".wlabel"), ...document.querySelectorAll(".dlabel")];
+  for(const el of els){ el.style.visibility="visible"; const b=el.getBoundingClientRect(); const hit=placed.some(p=>!(b.right+6<p.left||b.left-6>p.right||b.bottom+2<p.top||b.top-2>p.bottom)); if(hit) el.style.visibility="hidden"; else placed.push(b); }
+}
+function setBase(v){
+  state.base=v;
+  if(tileLayer){ map.removeLayer(tileLayer); tileLayer=null; }
+  if(v!=="carto"){
+    const url = v==="sat" ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" : "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    const attr = v==="sat" ? "Imagen: Esri, Maxar, Earthstar Geographics" : "© colaboradores de OpenStreetMap";
+    let errs=0;
+    tileLayer = L.tileLayer(url,{maxZoom:18, attribution:attr}).addTo(map);
+    tileLayer.on("tileerror",()=>{ errs++; if(errs===3){ toast("Este visor no puede cargar mapas de internet aquí. Abrí el archivo HTML descargado en tu navegador para ver la imagen satelital."); document.querySelector('input[name=base][value=carto]').checked=true; setBase("carto"); } });
+  }
+  restyleBase();
+}
+function renderMarkers(){
+  markerLayer.clearLayers(); markers.clear();
+  const r=state.radius||5;
+  for(const rec of visible()){
+    if(!hasCoords(rec)) continue;
+    const sit=esSitio(rec); const m=L.circleMarker([+rec.latitud,+rec.longitud],{renderer:canvasR,radius:sit?r+0.5:r,weight:sit?2.4:1.5,color:sit?PALETTE["--ink"]:PALETTE["--mark-ring"],fillColor:colorOf(rec),fillOpacity:1});
+    m.bindTooltip(`<span class="mono">${esc(rec.codigo)}</span> · ${esc(rec.tipo_unidad||"")}<br>${esc(rec.localidad||"")}${rec.distrito?" · "+esc(rec.distrito):""}`,{direction:"top",offset:[0,-4]});
+    m.on("click",ev=>{ L.DomEvent.stopPropagation(ev); if(state.mode==="placing") return; select(rec.codigo,false); });
+    markerLayer.addLayer(m); markers.set(rec.codigo,m);
+  }
+  updateSelRing();
+}
+function updateSelRing(){
+  const r = state.selected && state.records.find(x=>x.codigo===state.selected);
+  if(r && hasCoords(r)){ selRing.setLatLng([+r.latitud,+r.longitud]); selRing.setStyle({opacity:1,color:PALETTE["--ink"]}); }
+  else selRing.setStyle({opacity:0});
+}
+function fitAll(){ const pts=state.records.filter(hasCoords).map(r=>[+r.latitud,+r.longitud]); if(pts.length) map.fitBounds(pts,{padding:[40,40],maxZoom:13}); else map.setView([-25.3,-55.1],10); }
+
+/* ============================================================
+   RENDER: PANEL LATERAL
+   ============================================================ */
+function optionsHtml(arr, sel, allLabel){ return `<option value="">${esc(allLabel)}</option>` + arr.map(v=>`<option${v===sel?" selected":""}>${esc(v)}</option>`).join(""); }
+function renderFilters(){
+  const f=state.filters;
+  $("#fEmb").innerHTML = [["","Ambos embalses"],["Yguazú","Yguazú"],["Acaray","Acaray"]].map(([v,l])=>`<button class="chip" data-emb="${v}" aria-pressed="${f.embalse===v}">${l}</button>`).join("");
+  const dists=[...new Set(state.records.map(r=>r.distrito).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+  $("#fDist").innerHTML=optionsHtml(dists,f.distrito,"Todos los distritos");
+  $("#fTipo").innerHTML=optionsHtml(OPT.tipo_unidad,f.tipo,"Todo tipo de unidad");
+  $("#fEstado").innerHTML=optionsHtml(OPT.estado,f.estado,"Todo estado");
+  $("#fFranja").innerHTML=optionsHtml(OPT.franja,f.franja,"Franja: todas");
+  $("#fOrig").innerHTML = [["","Todo origen"],["censo","Censo"],["sitio","Sitios visitados"],["encuesta","Encuestas depleción"]].map(([v,l])=>`<button class="chip" data-orig="${v}" aria-pressed="${(f.origen||"")===v}">${l}</button>`).join("");
+  $("#fIvh").innerHTML = `<span class="flabel" style="margin-right:2px">IVH</span>` + ["Alta","Media","Baja"].map(v=>`<button class="chip" data-ivh="${v}" aria-pressed="${f.ivh===v}">${v}</button>`).join("");
+}
+function renderStats(){
+  const base = state.records.filter(r=>matches(r,true));
+  const n=base.length, tot=state.records.length;
+  const alta=base.filter(r=>ivh(r).nivel==="Alta").length;
+  const dentro=base.filter(r=>r.franja_dominio==="Dentro").length;
+  const rev=base.filter(r=>r.estado_ficha==="Requiere revisita").length;
+  const al=base.filter(r=>alertsOf(r).length).length;
+  const s=state.filters.stat;
+  const cell=(k,num,lab,extra="")=>`<button class="stat" data-stat="${k}" aria-pressed="${s===k}"><div class="n">${num}${extra}</div><div class="l">${lab}</div></button>`;
+  $("#stats").innerHTML = cell("", n, n===tot?"fichas en total":"fichas con estos filtros", n!==tot?` <small>/ ${tot}</small>`:"")
+    + cell("alta", alta, "IVH alto")
+    + (activeScen() ? cell("expuestas", base.filter(r=>{ const e=expo(activeScen(),r); return e&&(e.in||e.d<=scen.margin); }).length, `expuestas en ${esc(scenName(activeScen()))}`) : cell("dentro", dentro, "dentro de la franja"))
+    + (al ? cell("alertas", al, "con alertas de ubicación") : cell("revisita", rev, "requieren revisita"));
+}
+function renderList(){
+  const A=activeScen(); const rank=r=>{ if(!A) return 0; const e=expo(A,r); return !e?3:e.in?0:e.d<=scen.margin?1:2; };
+  const rows = visible().slice().sort((a,b)=>rank(a)-rank(b) || (ivh(b).score??-1)-(ivh(a).score??-1) || String(a.codigo).localeCompare(String(b.codigo)));
+  $("#listSort").textContent = A ? `Ordenadas por exposición a ${scenName(A)} e IVH` : "Ordenadas por IVH";
+  $("#listCount").textContent = `${rows.length} ficha${rows.length===1?"":"s"}`;
+  if(!rows.length){ $("#list").innerHTML = `<div class="empty">Ninguna ficha coincide con los filtros.<br><button class="linkbtn" id="clearF2">Limpiar filtros</button></div>`; return; }
+  const lim = rows.slice(0,state.listLimit);
+  $("#list").innerHTML = lim.map(r=>{
+    const v=ivh(r); const al=alertsOf(r);
+    const est = r.estado_ficha==="Requiere revisita"?'<span class="pill warn">Revisita</span>':r.estado_ficha==="Validada"?'<span class="pill good">Validada</span>':r.estado_ficha==="Actualizada en gabinete"?'<span class="pill acc">Actualizada</span>':'';
+    return `<button class="item" data-code="${esc(r.codigo)}" aria-current="${state.selected===r.codigo}">
+      <span class="sw" style="background:${colorOf(r)}"></span>
+      <span class="t1">${esc(r.codigo)}</span>
+      <span class="meta">${al.length?'<span class="pill bad">Ubicación</span> ':''}${A?(()=>{ const e=expo(A,r); return e&&e.in?'<span class="pill bad">Dentro</span> ':e&&e.d<=scen.margin?`<span class="pill warn">&lt; ${scen.margin} m</span> `:""; })():""}${est}${v.score!==null?` <span class="mono">${v.score}</span>`:''}</span>
+      <span class="t2">${r.nombre_sitio?`<b>${esc(r.nombre_sitio)}</b> · `:""}${esc(r.tipo_unidad||"Sin tipo")}${r.localidad?" · "+esc(r.localidad):""}${r.distrito?", "+esc(r.distrito):""}</span>
+    </button>`;
+  }).join("") + (rows.length>state.listLimit?`<div class="more"><button class="btn small" id="moreBtn">Mostrar ${Math.min(150,rows.length-state.listLimit)} más de ${rows.length-state.listLimit}</button></div>`:"");
+}
+function renderLegend(){
+  const cb=COLOR_BY[state.colorBy]; const rows=visible();
+  const counts={}; rows.forEach(r=>{ const v=cb.get(r); counts[v]=(counts[v]||0)+1; });
+  const seen=new Set();
+  const cls=cb.classes.filter(([v])=>counts[v] && !seen.has(v) && seen.add(v));
+  $("#legend").innerHTML = `<select class="sel" id="colorBy" aria-label="Colorear puntos por">${Object.entries(COLOR_BY).filter(([k])=>k!=="exposicion"||activeScen()).map(([k,v])=>`<option value="${k}"${k===state.colorBy?" selected":""}>${esc(v.label)}</option>`).join("")}</select>
+    <div class="lg">${cls.map(([v,c])=>`<div class="lg-row"><span class="sw" style="background:${PALETTE[c]}"></span><span>${esc(v)}</span><span class="c">${counts[v]}</span></div>`).join("") || '<div class="lg-note">Sin fichas visibles.</div>'}</div>
+    ${cb.note?`<div class="lg-note">${esc(cb.note)}</div>`:""}${rows.some(esSitio)?`<div class="lg-row lg-site"><span class="sw sw-site"></span><span>Relevado por el equipo</span><span class="c">${rows.filter(esSitio).length}</span></div>`:""}`;
+}
+function renderSummary(){
+  const rows=visible();
+  const by={};
+  rows.forEach(r=>{ const k=r.distrito||"Sin distrito"; (by[k]=by[k]||{n:0,alta:0,dentro:0,somero:0,dep:0,emb:new Set()}); const o=by[k]; o.n++; if(ivh(r).nivel==="Alta")o.alta++; if(r.franja_dominio==="Dentro")o.dentro++; if(r.fuente_agua_consumo==="Pozo somero propio")o.somero++; if(r.dependencia_embalse==="Alta")o.dep++; if(r.embalse)o.emb.add(r.embalse); });
+  const dist=Object.entries(by).sort((a,b)=>b[1].n-a[1].n);
+  const usos={}; rows.forEach(r=>splitMulti(r.usos_agua).forEach(u=>usos[u]=(usos[u]||0)+1));
+  const af={}; rows.forEach(r=>splitMulti(r.afectaciones_previstas).filter(a=>a!=="Ninguna").forEach(u=>af[u]=(af[u]||0)+1));
+  const bars=(o)=>{ const e=Object.entries(o).sort((a,b)=>b[1]-a[1]); const mx=Math.max(1,...e.map(x=>x[1])); return `<div class="bars">${e.map(([k,v])=>`<div class="bar" title="${esc(k)}: ${v} fichas (${Math.round(v/rows.length*100)}%)"><span class="k">${esc(k)}</span><span class="track"><span class="fill" style="display:block;width:${(v/mx*100).toFixed(1)}%"></span></span><span class="v">${v}</span></div>`).join("")}</div>`; };
+  const conoce=rows.filter(r=>r.conoce_descenso==="Sí").length, prc=rows.filter(r=>+r.preocupacion_descenso>=4).length;
+  $("#paneSum").innerHTML = scenSummaryHtml(rows) + `
+    <div><h3>Fichas por distrito</h3>
+      <div style="overflow-x:auto"><table class="t"><thead><tr><th>Distrito</th><th class="num">Fichas</th><th class="num">IVH alto</th><th class="num">En franja</th><th class="num">Pozo somero</th></tr></thead>
+      <tbody>${dist.map(([k,o])=>`<tr><td>${esc(k)}<div style="font-size:11px;color:var(--ink-3)">${[...o.emb].join(", ")}</div></td><td class="num">${o.n}</td><td class="num">${o.alta}</td><td class="num">${o.dentro}</td><td class="num">${o.somero}</td></tr>`).join("")}</tbody></table></div>
+      <p class="note">Calculado sobre las ${rows.length} fichas que cumplen los filtros actuales.</p></div>
+    <div><h3>Usos del agua del embalse</h3>${bars(usos)}<p class="note">Una ficha puede declarar varios usos.</p></div>
+    <div><h3>Afectaciones previstas por el descenso</h3>${bars(af)}
+      <p class="note">${conoce} de ${rows.length} fichas (${rows.length?Math.round(conoce/rows.length*100):0}%) conocen el descenso programado; ${prc} declaran preocupación alta (4 o 5).</p></div>`;
+  $("#paneSum").querySelectorAll("[data-sumscen]").forEach(b=>b.onclick=()=>setScen(b.dataset.sumscen));
+}
+function renderSource(){
+  const s=state.source;
+  $("#sourceChip").innerHTML = `<span class="dot-demo${s.demo?"":" dot-live"}"></span><span><b>${esc(s.label)}</b> · ${state.records.length} fichas</span>`;
+  $("#sourceChip").title = s.demo ? "Los datos de ejemplo son ficticios. Cargá la entrega real de la encuestadora para reemplazarlos." : "Última carga: "+fmtDT(s.at);
+}
+function renderAll(){ renderSource(); renderFilters(); renderStats(); renderList(); renderLegend(); if(state.tab==="sum") renderSummary(); renderMarkers(); renderDrawer(); }
+const renderData = () => { renderStats(); renderList(); renderLegend(); if(state.tab==="sum") renderSummary(); if(state.tab==="hy") renderHydro(); renderMarkers(); if(scen.list.length||$("#scenCard").innerHTML) renderScenCard(); renderAlertChip(); };
+function renderAlertChip(){ const c=$("#alertChip"); if(!c) return; if(state.filters.alerta){ c.hidden=false; c.innerHTML=`<span>Fichas a contactar: <b>${esc(state.alertaNombre||"umbral")}</b></span><button class="linkbtn" id="alertClr">Quitar</button>`; $("#alertClr").onclick=()=>{ state.filters.alerta=""; renderData(); }; } else { c.hidden=true; c.innerHTML=""; } }
+function setTab(t){ state.tab=t; [["list","#tabList","#paneList"],["sum","#tabSum","#paneSum"],["hy","#tabHy","#paneHy"]].forEach(([k,tb,pn])=>{ $(tb).setAttribute("aria-selected",String(k===t)); $(pn).hidden=k!==t; }); $("#paneList").style.display = t==="list"?"flex":"none"; if(t==="sum") renderSummary(); if(t==="hy") renderHydro(); }
+
+/* ============================================================
+   FICHA (CAJÓN)
+   ============================================================ */
+function fmtVal(f, v){
+  if(isEmpty(v)) return '<span class="empty-v">Sin dato</span>';
+  if(f && f.sensitive && !state.showSensitive) return '<span class="masked">••••••••</span>';
+  if(f && f.type==="date") return esc(fmtD(v));
+  if(f && f.type==="coord") return `<span class="mono">${(+v).toFixed(6)}</span>`;
+  if(f && f.type==="multi") return splitMulti(v).map(x=>`<span class="pill" style="margin:0 4px 4px 0">${esc(x)}</span>`).join("");
+  if(f && f.key==="preocupacion_descenso") return `${esc(v)} de 5`;
+  if(f && f.key==="distancia_costa_m") return `${esc(v)} m`;
+  return esc(v);
+}
+function select(code, fly=true){
+  state.selected=code; state.editing=null; state.station=null; state.dtab="ficha";
+  const r=state.records.find(x=>x.codigo===code);
+  if(r && hasCoords(r) && fly){ flyOffset([+r.latitud,+r.longitud], Math.max(map.getZoom(),13)); }
+  document.querySelectorAll(".item").forEach(e=>e.setAttribute("aria-current", e.dataset.code===code));
+  if(window.innerWidth<=900) $("#side").classList.remove("open");
+  updateSelRing(); renderDrawer();
+}
+function flyOffset(ll,z){ const off = window.innerWidth>900 ? 220 : 0; const p=map.project(ll,z).add([off,0]); map.flyTo(map.unproject(p,z), z, {duration:.6}); }
+function closeDrawer(){ state.selected=null; state.editing=null; state.station=null; cancelMove(); updateSelRing(); renderDrawer(); document.querySelectorAll(".item").forEach(e=>e.setAttribute("aria-current","false")); }
+function renderDrawer(){
+  const d=$("#drawer");
+  const open=!!(state.editing || state.station || (state.selected && state.records.some(x=>x.codigo===state.selected)));
+  $("#main").classList.toggle("has-drawer", open);
+  if(state.editing){ d.classList.add("open"); d.innerHTML = editHtml(); bindEdit(); return; }
+  if(state.station){ d.classList.add("open"); d.innerHTML = stationHtml(state.station); $("#dClose").onclick=closeDrawer; bindCharts(d); return; }
+  const r = state.selected && state.records.find(x=>x.codigo===state.selected);
+  if(!r){ d.classList.remove("open"); d.innerHTML=""; return; }
+  d.classList.add("open");
+  const v=ivh(r); const al=alertsOf(r);
+  const lvlPill = v.nivel==="Alta"?"bad":v.nivel==="Media"?"warn":"";
+  const estPill = r.estado_ficha==="Requiere revisita"?"warn":r.estado_ficha==="Validada"?"good":"";
+  const h = state.history.filter(x=>x.codigo===r.codigo);
+  const tab = state.dtab||"ficha";
+  d.innerHTML = `
+    <div class="dhead">
+      <div class="r1"><div><div class="code">${esc(r.codigo)}</div><div class="where">${r.nombre_sitio?`<b>${esc(r.nombre_sitio)}</b><br>`:""}${esc(r.localidad||(r.nombre_sitio?"":"Sin localidad"))}${r.distrito?(r.localidad?" · ":"")+esc(r.distrito):""}${r.embalse?" · Embalse "+esc(r.embalse):""}</div></div>
+        <button class="btn ghost iconbtn close" id="dClose" aria-label="Cerrar ficha">${ICON.x}</button></div>
+      <div class="tags"><span class="pill">${esc(r.tipo_unidad||"Sin tipo")}</span>${r.estado_ficha?`<span class="pill ${estPill}">${esc(r.estado_ficha)}</span>`:""}<span class="pill ${lvlPill}">IVH ${v.score!==null?v.score+" · "+v.nivel:"sin dato"}</span>${al.map(a=>`<span class="pill bad">${esc(a)}</span>`).join("")}</div>
+      <div class="acts">
+        <button class="btn small" id="dEdit">${ICON.edit}Editar</button>
+        <button class="btn small" id="dMove">${ICON.move}${hasCoords(r)?"Mover punto":"Ubicar en el mapa"}</button>
+        ${hasCoords(r)?`<button class="btn small" id="dCenter">${ICON.target}Centrar</button>`:""}
+        <button class="btn small ghost" id="dEye" aria-pressed="${state.showSensitive}">${ICON.eye}${state.showSensitive?"Ocultar datos personales":"Ver datos personales"}</button>
+      </div>
+      <div class="tabs" style="padding:0;border:0" role="tablist">
+        <button class="tab" data-dtab="ficha" aria-selected="${tab==="ficha"}">Ficha</button>
+        <button class="tab" data-dtab="ivh" aria-selected="${tab==="ivh"}">Vulnerabilidad</button>
+        <button class="tab" data-dtab="hist" aria-selected="${tab==="hist"}">Historial (${h.length})</button>
+      </div>
+    </div>
+    <div class="dbody">${tab==="ficha"?fichaHtml(r):tab==="ivh"?ivhHtml(r,v):histHtml(h)}</div>`;
+  $("#dClose").onclick=closeDrawer;
+  $("#dEdit").onclick=()=>startEdit(r.codigo);
+  $("#dMove").onclick=()=>startMove(r.codigo);
+  if($("#dCenter")) $("#dCenter").onclick=()=>flyOffset([+r.latitud,+r.longitud],15);
+  $("#dEye").onclick=()=>{ state.showSensitive=!state.showSensitive; renderDrawer(); };
+  d.querySelectorAll("[data-dtab]").forEach(b=>b.onclick=()=>{ state.dtab=b.dataset.dtab; renderDrawer(); });
+}
+function fichaHtml(r){
+  let html=scenFichaHtml(r);
+  for(const [g,gl] of GROUPS){
+    const fs=SCHEMA.filter(f=>f.group===g && f.key!=="codigo");
+    html+=`<div class="grp"><h4>${esc(gl)}</h4><dl class="kv">${fs.map(f=>`<dt>${esc(f.label)}</dt><dd>${fmtVal(f,r[f.key])}</dd>`).join("")}</dl></div>`;
+  }
+  const ex=Object.entries(r._extra||{}).filter(([k,v])=>!isEmpty(v));
+  if(ex.length) html+=`<div class="grp"><h4>Información adicional</h4><dl class="kv">${ex.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></div>`;
+  html+=`<div class="grp"><h4>Registro</h4><dl class="kv"><dt>Origen</dt><dd>${esc(r._origen||"—")}</dd><dt>Última modificación</dt><dd>${r._actualizado?esc(fmtDT(r._actualizado)):"Sin cambios desde la carga"}</dd></dl></div>`;
+  return html;
+}
+function ivhHtml(r,v){
+  if(v.score===null) return `<div class="grp"><p>Faltan datos para calcular el índice en esta ficha. Se necesitan al menos dos de: dependencia del embalse, fuente de agua, tenencia y franja de dominio.</p></div>`;
+  return `<div class="grp"><div class="ivhbox"><div class="ivhnum">${v.score}<small> / 100</small></div>
+      <div class="gauge"><div class="g"><i style="left:${v.score}%"></i></div><div class="ticks"><span style="left:0">0</span><span style="left:35%">35</span><span style="left:55%">55</span><span style="left:100%">100</span></div></div></div>
+    <table class="parts">${v.parts.map(p=>`<tr><td>${esc(p.label)}</td><td class="v">${esc(p.value)}</td><td>${p.pts} / ${p.max}</td></tr>`).join("")}</table>
+    <div class="callout">Índice ilustrativo para el prototipo. Los factores y pesos se calibran con el equipo social antes de usarlo en decisiones.</div></div>`;
+}
+function histHtml(h){
+  if(!h.length) return `<div class="grp"><p style="color:var(--ink-3)">Esta ficha no tiene cambios registrados desde que se cargó.</p></div>`;
+  return `<div class="hist">${h.slice().reverse().map(x=>`<div class="hrow"><div class="h1"><span>${esc(fmtDT(x.at))}</span><span>${esc(x.editor||"")}</span></div>
+    <div class="h2"><b>${esc(x.campo)}</b>${x.antes!==""||x.despues!==""?`: ${x.antes!==""?`<del>${esc(maskIf(x.campoKey,x.antes))}</del> → `:""}<ins>${esc(maskIf(x.campoKey,x.despues))}</ins>`:""}</div>
+    <div class="h1" style="margin-top:2px"><span>${esc(x.origen||"")}</span></div></div>`).join("")}</div>`;
+}
+const maskIf = (k,v) => (BYKEY[k]&&BYKEY[k].sensitive&&!state.showSensitive&&!isEmpty(v))?"••••••":v;
+
+/* ---------- edición ---------- */
+function startEdit(code, draft){
+  cancelMove(); removeDraftPin();
+  state.editing = code || "__new__";
+  state.draft = draft || JSON.parse(JSON.stringify(state.records.find(x=>x.codigo===code)));
+  renderDrawer();
+}
+function fieldInput(f, v){
+  const id="e_"+f.key;
+  if(f.type==="select") return `<select id="${id}">${optionsHtml(f.options.includes(v)||isEmpty(v)?f.options:[v,...f.options],v,"Sin dato")}</select>`;
+  if(f.type==="scale") return `<div class="seg" role="radiogroup" aria-label="${esc(f.label)}">${f.options.map(o=>`<label><input type="radio" name="${id}" value="${o}"${String(v)===o?" checked":""}>${o}</label>`).join("")}</div>`;
+  if(f.type==="multi"){ const cur=new Set(splitMulti(v)); return `<div class="checks" id="${id}">${f.options.map(o=>`<label><input type="checkbox" value="${esc(o)}"${cur.has(o)?" checked":""}>${esc(o)}</label>`).join("")}</div>`; }
+  if(f.type==="textarea") return `<textarea id="${id}">${esc(v)}</textarea>`;
+  if(f.type==="date") return `<input id="${id}" type="date" value="${esc(String(v).slice(0,10))}">`;
+  if(f.type==="number") return `<input id="${id}" type="number" inputmode="decimal" step="any" value="${esc(v)}">`;
+  if(f.type==="coord") return `<input id="${id}" type="text" class="mono" inputmode="decimal" value="${esc(v)}">`;
+  return `<input id="${id}" type="text" value="${esc(v)}" autocomplete="off">`;
+}
+function editHtml(){
+  const r=state.draft; const isNew=state.editing==="__new__";
+  let html=`<div class="dhead"><div class="r1"><div><div class="code">${isNew?"Nueva ficha":esc(r.codigo)}</div><div class="where">${isNew?"Completá los datos relevados. Los campos de ubicación se calcularon desde el punto marcado.":"Editando ficha"}</div></div>
+    <button class="btn ghost iconbtn close" id="eClose" aria-label="Cancelar edición">${ICON.x}</button></div><div style="height:12px"></div></div><div class="dbody"><form class="form" id="eForm" novalidate>`;
+  if(!state.editor) html+=`<div class="editor-box"><label for="e__editor">¿Quién registra este cambio?</label><input id="e__editor" type="text" placeholder="Nombre y apellido" autocomplete="name"><span style="font-size:12px;color:var(--ink-2)">Queda en el historial de cada cambio. Se pide una sola vez en este navegador.</span></div>`;
+  for(const [g,gl] of GROUPS){
+    html+=`<div class="grp"><h4>${esc(gl)}</h4>`;
+    for(const f of SCHEMA.filter(x=>x.group===g)){
+      if(f.key==="codigo"){ html+=`<div class="fld"><label for="e_codigo">${esc(f.label)}</label>${isNew?`<input id="e_codigo" type="text" class="mono" value="${esc(r.codigo)}">`:`<input id="e_codigo" type="text" class="mono" value="${esc(r.codigo)}" disabled>`}${isNew?'<span class="hint">Propuesto automáticamente; podés reemplazarlo por el código de la encuestadora.</span>':''}</div>`; continue; }
+      if(f.key==="latitud"){ html+=`<div class="fld two"><div class="fld" style="margin:0"><label for="e_latitud">Latitud</label>${fieldInput(f,r.latitud)}</div><div class="fld" style="margin:0"><label for="e_longitud">Longitud</label>${fieldInput(BYKEY.longitud,r.longitud)}</div></div>`; continue; }
+      if(f.key==="longitud") continue;
+      const lbl = (f.type==="multi"||f.type==="scale") ? `<span class="lb">${esc(f.label)}</span>` : `<label for="e_${f.key}">${esc(f.label)}</label>`;
+      html+=`<div class="fld">${lbl}${fieldInput(f,r[f.key])}${f.sensitive?'<span class="hint">Dato personal: se oculta por defecto y puede excluirse al exportar.</span>':''}${f.key==="distancia_costa_m"&&isNew?'<span class="hint">Estimada sobre la cartografía base; corregir con el dato de campo.</span>':''}</div>`;
+    }
+    html+=`</div>`;
+  }
+  html+=`<div class="formbar"><span class="who">${state.editor?`Registrado como <b>${esc(state.editor)}</b> · <button type="button" class="linkbtn" id="eWho">cambiar</button>`:""}</span><button type="button" class="btn" id="eCancel">Cancelar</button><button type="submit" class="btn primary">${isNew?"Crear ficha":"Guardar cambios"}</button></div></form></div>`;
+  return html;
+}
+let draftPin=null;
+function removeDraftPin(){ if(draftPin){ map.removeLayer(draftPin); draftPin=null; } }
+function placeDraftPin(){
+  removeDraftPin(); const r=state.draft; if(state.editing!=="__new__" || r.latitud==="" ) return;
+  draftPin=L.marker([+r.latitud,+r.longitud],{draggable:true,pane:"sel",icon:L.divIcon({className:"",iconSize:[22,22],iconAnchor:[11,22],html:'<div class="pinicon"></div>'})}).addTo(map).bindTooltip("Arrastrá para ajustar la ubicación",{direction:"top",offset:[0,-22]});
+  draftPin.on("dragend",()=>{ const p=draftPin.getLatLng(); const lat=+p.lat.toFixed(6), lon=+p.lng.toFixed(6); $("#e_latitud").value=lat; $("#e_longitud").value=lon; const d=districtAt(lat,lon); if(d){ $("#e_distrito").value=d.distrito; $("#e_departamento").value=d.departamento; } const w=waterContext(lat,lon); $("#e_distancia_costa_m").value=w.inLake?0:w.dist; });
+}
+function bindEdit(){
+  placeDraftPin();
+  const cancel=()=>{ removeDraftPin(); const wasNew=state.editing==="__new__"; state.editing=null; state.draft=null; if(wasNew) state.selected=null; renderDrawer(); };
+  $("#eClose").onclick=cancel; $("#eCancel").onclick=cancel;
+  if($("#eWho")) $("#eWho").onclick=()=>{ state.editor=""; collectDraft(); renderDrawer(); };
+  $("#eForm").onsubmit=e=>{ e.preventDefault(); commitEdit(); };
+}
+function collectDraft(){
+  const r=state.draft;
+  for(const f of SCHEMA){
+    const el=$("#e_"+f.key);
+    if(f.type==="scale"){ const c=document.querySelector(`input[name="e_${f.key}"]:checked`); r[f.key]=c?c.value:""; continue; }
+    if(!el) continue;
+    if(f.type==="multi"){ r[f.key]=[...el.querySelectorAll("input:checked")].map(i=>i.value).join("; "); continue; }
+    if(el.disabled) continue;
+    let v=el.value.trim();
+    if(f.type==="number"||f.type==="coord") v=parseNum(v);
+    r[f.key]=v;
+  }
+}
+function commitEdit(){
+  const edEl=$("#e__editor");
+  if(edEl){ const n=edEl.value.trim(); if(!n){ edEl.focus(); toast("Escribí tu nombre para registrar el cambio en el historial."); return; } state.editor=n; }
+  collectDraft();
+  const r=state.draft; const isNew=state.editing==="__new__";
+  r.codigo=String(r.codigo||"").trim();
+  if(!r.codigo){ toast("La ficha necesita un código."); $("#e_codigo").focus(); return; }
+  if(isNew && byCode().has(r.codigo.toUpperCase())){ toast(`Ya existe una ficha con el código ${r.codigo}.`); $("#e_codigo").focus(); return; }
+  if((r.latitud===""||r.longitud==="") && !(r.latitud===""&&r.longitud==="")){ toast("Completá latitud y longitud, o dejá ambas vacías."); return; }
+  const at=nowISO();
+  if(isNew){
+    r._creado=at; r._actualizado=at; r._origen="Alta en gabinete"; if(!r.estado_ficha) r.estado_ficha="Actualizada en gabinete";
+    state.records.push(r);
+    state.history.push({at, codigo:r.codigo, campo:"Ficha creada", campoKey:"", antes:"", despues:`${r.tipo_unidad||"Ficha"} en ${r.localidad||r.distrito||"ubicación marcada"}`, editor:state.editor, origen:"Alta manual"});
+    toast(`Ficha ${r.codigo} creada.`);
+  } else {
+    const orig=state.records.find(x=>x.codigo===state.editing);
+    let n=0;
+    for(const f of SCHEMA){ const a=orig[f.key], b=r[f.key]; if(String(a??"")!==String(b??"")){ state.history.push({at,codigo:orig.codigo,campo:f.label,campoKey:f.key,antes:String(a??""),despues:String(b??""),editor:state.editor,origen:"Edición manual"}); orig[f.key]=b; n++; } }
+    if(n) orig._actualizado=at;
+    toast(n?`Se guardaron ${n} cambio${n>1?"s":""} en ${orig.codigo}.`:"No había cambios para guardar.");
+  }
+  removeDraftPin(); state.selected=r.codigo; state.editing=null; state.draft=null; state.dtab="ficha";
+  save(); renderFilters(); renderData(); renderSource(); renderDrawer();
+}
+
+/* ---------- alta y reubicación en el mapa ---------- */
+function setMode(m){ state.mode=m; $("#app").classList.toggle("placing", m==="placing"); const b=$("#placeBanner"); if(b) b.remove();
+  if(m==="placing"){ const div=document.createElement("div"); div.className="mcard placing-banner"; div.id="placeBanner"; div.innerHTML=`<span>Hacé clic en el mapa donde se ubica la nueva ficha.</span><button class="btn small" id="placeCancel">Cancelar</button>`; $("#mapwrap").appendChild(div); $("#placeCancel").onclick=()=>setMode("view"); } }
+function nextCode(emb){ const pre = emb==="Yguazú"?"HS-YG-":emb==="Acaray"?"HS-AC-":"HS-NV-"; let mx=0; state.records.forEach(r=>{ const s=String(r.codigo); if(s.startsWith(pre)){ const n=parseInt(s.slice(pre.length),10); if(n>mx) mx=n; } }); return pre+String(mx+1).padStart(4,"0"); }
+function onMapClick(e){
+  if(state.mode!=="placing") return;
+  setMode("view");
+  const lat=+e.latlng.lat.toFixed(6), lon=+e.latlng.lng.toFixed(6);
+  const r=blank(); r.latitud=lat; r.longitud=lon;
+  const d=districtAt(lat,lon); if(d){ r.distrito=d.distrito; r.departamento=d.departamento; }
+  const w=waterContext(lat,lon); r.embalse=w.embalse; r.distancia_costa_m=w.inLake?0:w.dist;
+  r.fecha_relevamiento=new Date().toISOString().slice(0,10); r.estado_ficha="Actualizada en gabinete"; r.codigo=nextCode(r.embalse);
+  state.selected=null; startEdit(null, r);
+}
+function startMove(code){
+  cancelMove();
+  const r=state.records.find(x=>x.codigo===code); if(!r) return;
+  const ll = hasCoords(r)?[+r.latitud,+r.longitud]:map.getCenter();
+  state.moving=code;
+  moveMarker=L.marker(ll,{draggable:true,autoPan:true,pane:"sel",icon:L.divIcon({className:"",iconSize:[22,22],iconAnchor:[11,22],html:'<div class="pinicon"></div>'})}).addTo(map);
+  map.panTo(ll);
+  const div=document.createElement("div"); div.className="mcard placing-banner"; div.id="moveBanner";
+  div.innerHTML=`<span>Arrastrá el marcador a la nueva ubicación.</span><button class="btn small" id="mvOk">Guardar ubicación</button><button class="btn small" id="mvCancel">Cancelar</button>`;
+  $("#mapwrap").appendChild(div);
+  $("#mvCancel").onclick=cancelMove;
+  $("#mvOk").onclick=()=>{
+    if(!state.editor){ cancelMove(); toast("Primero registrá tu nombre: abrí Editar en la ficha."); startEdit(code); return; }
+    const p=moveMarker.getLatLng(); const at=nowISO();
+    const lat=+p.lat.toFixed(6), lon=+p.lng.toFixed(6);
+    const before = hasCoords(r)?`${(+r.latitud).toFixed(6)}, ${(+r.longitud).toFixed(6)}`:"Sin ubicación";
+    r.latitud=lat; r.longitud=lon; r._actualizado=at;
+    const d=districtAt(lat,lon);
+    state.history.push({at,codigo:r.codigo,campo:"Ubicación",campoKey:"latitud",antes:before,despues:`${lat}, ${lon}`,editor:state.editor,origen:"Reubicación en el mapa"});
+    if(d && d.distrito!==r.distrito){ state.history.push({at,codigo:r.codigo,campo:"Distrito",campoKey:"distrito",antes:r.distrito,despues:d.distrito,editor:state.editor,origen:"Reubicación en el mapa"}); r.distrito=d.distrito; r.departamento=d.departamento; }
+    cancelMove(); save(); renderFilters(); renderData(); renderDrawer(); toast(`Ubicación de ${r.codigo} actualizada.`);
+  };
+}
+function cancelMove(){ if(moveMarker){ map.removeLayer(moveMarker); moveMarker=null; } state.moving=null; const b=$("#moveBanner"); if(b) b.remove(); }
+
+/* ============================================================
+   MODALES
+   ============================================================ */
+function openModal(html, cls=""){
+  closeModal();
+  const o=document.createElement("div"); o.className="overlay"; o.id="overlay";
+  o.innerHTML=`<div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div>`;
+  o.addEventListener("mousedown",e=>{ if(e.target===o) closeModal(); });
+  document.body.appendChild(o);
+  o.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+  const f=o.querySelector("button.primary, input, select"); if(f) setTimeout(()=>f.focus(),30);
+  return o;
+}
+function closeModal(){ const o=$("#overlay"); if(o) o.remove(); }
+const mhead = (t,sub="") => `<div class="mhead"><h2>${t}</h2>${sub?`<span class="steps">${sub}</span>`:""}<button class="btn ghost iconbtn close" data-close aria-label="Cerrar">${ICON.x}</button></div>`;
+
+/* ---------- importación ---------- */
+let IMP=null;
+function openImport(){
+  IMP=null;
+  const o=openModal(`${mhead("Cargar entrega de la encuestadora","Paso 1 de 2")}
+    <div class="mbody">
+      <p>Subí el archivo que entrega la empresa encuestadora. El visor reconoce las columnas, ubica cada ficha en el mapa y, si el código ya existe, actualiza la ficha y deja el cambio en el historial.</p>
+      <label class="drop" id="drop" for="dataFile">${ICON.upload}<strong>Elegí o arrastrá un archivo</strong><span>Excel (.xlsx, .xls), CSV o GeoJSON de puntos</span></label>
+      <div class="fmtgrid">
+        <div class="fmt"><b>KoboToolbox u ODK</b>Exportación en Excel. Reconoce _gps_latitude, _gps_longitude y columnas de geopunto.</div>
+        <div class="fmt"><b>Coordenadas UTM</b>Si vienen en metros (zona 21 Sur, WGS84), se convierten automáticamente.</div>
+        <div class="fmt"><b>Columnas propias</b>Las que no forman parte de la ficha se conservan como campos adicionales.</div>
+      </div>
+    </div>
+    <div class="mfoot"><span class="spacer">¿Necesitás el formato para la encuestadora?</span><button class="btn" id="tplBtn">Descargar plantilla</button><button class="btn" data-close>Cancelar</button></div>`);
+  const drop=$("#drop");
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over");}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over");}));
+  drop.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) readDataFile(f); });
+  $("#tplBtn").onclick=downloadTemplate;
+}
+$("#dataFile").addEventListener("change",e=>{ const f=e.target.files[0]; e.target.value=""; if(f) readDataFile(f); });
+async function readDataFile(file){
+  try{
+    const name=file.name; const ext=name.split(".").pop().toLowerCase();
+    let rows=[], cols=[];
+    if(ext==="geojson"||ext==="json"){
+      const gj=JSON.parse(await file.text());
+      const feats = gj.type==="FeatureCollection"?gj.features:Array.isArray(gj)?gj:[gj];
+      rows = feats.map(f=>{ const p=Object.assign({},f.properties||{}); const g=f.geometry; if(g&&g.type==="Point"){ p.__lon=g.coordinates[0]; p.__lat=g.coordinates[1]; } return p; });
+    } else {
+      if(typeof XLSX==="undefined") throw new Error("No se pudo cargar el lector de Excel. Revisá la conexión e intentá de nuevo.");
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:"array",cellDates:true,raw:false});
+      const sn = wb.SheetNames.find(s=>/ficha|censo|data|datos|registro/i.test(s)) || wb.SheetNames[0];
+      rows = XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:"",raw:true,dateNF:"yyyy-mm-dd"});
+    }
+    rows = rows.filter(r=>Object.values(r).some(v=>!isEmpty(v)));
+    if(!rows.length) throw new Error("El archivo no tiene filas con datos.");
+    cols = [...new Set(rows.flatMap(r=>Object.keys(r)))];
+    IMP = {name, rows, cols, map:autoMap(cols), fixSwap:true};
+    { const codeCol=Object.keys(IMP.map).find(c=>IMP.map[c]==="codigo"); const ex=byCode(); const overlap = codeCol && rows.some(r=>ex.has(String(r[codeCol]).trim().toUpperCase())); IMP.mode = (overlap || !state.source.demo) ? "merge" : "replace"; }
+    showMapping();
+  }catch(err){ toast("No se pudo leer el archivo: "+(err.message||err)); }
+}
+function autoMap(cols){
+  const m={}; const used=new Set();
+  const idx={}; SCHEMA.forEach(f=>{ [f.key, norm(f.label), ...(f.aliases||[])].forEach(a=>{ if(!(a in idx)) idx[norm(a)]=f.key; }); });
+  for(const c of cols){
+    if(c==="__lat"){ m[c]="latitud"; used.add("latitud"); continue; }
+    if(c==="__lon"){ m[c]="longitud"; used.add("longitud"); continue; }
+    const n=norm(c); let k=idx[n];
+    if(!k){ const tail=n.split("_").slice(-2).join("_"); k=idx[tail] || idx[n.split("_").pop()]; if(k && ["x","y"].includes(n.split("_").pop()) && n.length>3) k=null; }
+    if(k && !used.has(k)){ m[c]=k; used.add(k); }
+    else m[c]="__extra";
+  }
+  if(!used.has("latitud")||!used.has("longitud")){
+    const g=cols.find(c=>/^(_?geolocation|gps|geopunto|geopoint|ubicacion_gps|coordenadas|georreferencia|ubicacion)$/.test(norm(c)));
+    if(g){ m[g]="__coords"; }
+  }
+  for(const c of cols) if(/^(uuid|index|submission_time|validation_status|status|version|xform_id_string|meta_instanceid|instanceid|notes|tags|submitted_by|attachments|geolocation_altitude)$/.test(norm(c)) && m[c]==="__extra") m[c]="__skip";
+  return m;
+}
+function coerce(f, v){
+  if(isEmpty(v)) return "";
+  if(v instanceof Date) return v.toISOString().slice(0,10);
+  if(f.type==="number"||f.type==="coord") return parseNum(v);
+  if(f.type==="date"){ if(typeof v==="number"&&v>20000&&v<80000){ const d=new Date(Math.round((v-25569)*864e5)); return d.toISOString().slice(0,10); } const s=String(v).trim(); const m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/); if(m) return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`; return s.slice(0,10); }
+  if(f.type==="select"||f.type==="scale"){ const s=String(v).trim(); const hit=(f.options||[]).find(o=>norm(o)===norm(s)); if(hit) return hit; if(f.options===OPT.sino){ if(/^(si|s|1|true|yes)$/.test(norm(s))) return "Sí"; if(/^(no|n|0|false)$/.test(norm(s))) return "No"; } return s; }
+  if(f.type==="multi"){ return splitMulti(v).map(x=>{ const hit=(f.options||[]).find(o=>norm(o)===norm(x)); return hit||x.trim(); }).join("; "); }
+  return String(v).trim();
+}
+function buildImport(){
+  const m=IMP.map; const out=[]; const issues=[]; let utm=false, swapped=0, nocode=0;
+  const latCol=Object.keys(m).find(c=>m[c]==="latitud"), lonCol=Object.keys(m).find(c=>m[c]==="longitud");
+  if(latCol&&lonCol){ const s=IMP.rows.map(r=>parseNum(r[latCol])).filter(v=>v!==""); const med=s.sort((a,b)=>a-b)[Math.floor(s.length/2)]; if(Math.abs(med)>1000) utm=true; }
+  let auto=1;
+  for(const row of IMP.rows){
+    const r=blank(); r._extra={};
+    for(const [c,k] of Object.entries(m)){
+      const v=row[c];
+      if(k==="__skip") continue;
+      if(k==="__extra"){ if(!isEmpty(v)) r._extra[c]= v instanceof Date ? v.toISOString().slice(0,10) : v; continue; }
+      if(k==="__coords"){ const nums=String(v??"").match(/-?\d+(?:[.,]\d+)?/g)||[]; if(nums.length>=2){ r.latitud=parseNum(nums[0]); r.longitud=parseNum(nums[1]); if(nums[3]&&isEmpty(r.precision_gps_m)) r.precision_gps_m=parseNum(nums[3]); } continue; }
+      r[k]=coerce(BYKEY[k],v);
+    }
+    if(utm && r.latitud!=="" && r.longitud!==""){ const [la,lo]=utmToLatLon(+r.longitud,+r.latitud,21); r.latitud=+la.toFixed(6); r.longitud=+lo.toFixed(6); }
+    if(hasCoords(r) && !inArea(+r.latitud,+r.longitud) && inArea(+r.longitud,+r.latitud) && IMP.fixSwap){ const t=r.latitud; r.latitud=r.longitud; r.longitud=t; swapped++; r.__swapped=true; }
+    r.codigo=String(r.codigo??"").trim();
+    if(!r.codigo){ nocode++; r.__autocode=true; }
+    if(hasCoords(r)){ if(isEmpty(r.distrito)||isEmpty(r.departamento)){ const d=districtAt(+r.latitud,+r.longitud); if(d){ if(isEmpty(r.distrito)) r.distrito=d.distrito; if(isEmpty(r.departamento)) r.departamento=d.departamento; } }
+      if(isEmpty(r.embalse)) r.embalse=waterContext(+r.latitud,+r.longitud).embalse; }
+    out.push(r);
+  }
+  const existing = IMP.mode==="merge" ? byCode() : new Map();
+  let nNew=0,nUpd=0,nSame=0,nNoXY=0,nOut=0, nFields=0;
+  const seen=new Set();
+  for(const r of out){
+    if(!hasCoords(r)){ nNoXY++; issues.push(`${r.codigo||"(sin código)"}: sin coordenadas; se importa sin ubicar.`); }
+    else if(!inArea(+r.latitud,+r.longitud)){ nOut++; issues.push(`${r.codigo||"(sin código)"}: coordenadas fuera del área del censo (${r.latitud}, ${r.longitud}).`); }
+    if(r.__swapped) issues.push(`${r.codigo}: latitud y longitud estaban invertidas; se corrigieron.`);
+    const key=r.codigo.toUpperCase();
+    if(r.codigo && seen.has(key)) issues.push(`${r.codigo}: código repetido en el archivo; se usa la última fila.`);
+    seen.add(key);
+    const ex=r.codigo && existing.get(key);
+    if(ex){ let ch=0; for(const f of SCHEMA){ if(!Object.values(m).includes(f.key) && !(f.key==="distrito"||f.key==="departamento"||f.key==="embalse")) continue; if(r[f.key]!=="" && String(ex[f.key]??"")!==String(r[f.key]??"")) ch++; } if(ch){ nUpd++; nFields+=ch; } else nSame++; }
+    else nNew++;
+  }
+  if(utm) issues.unshift("Las coordenadas venían en UTM zona 21 Sur; se convirtieron a latitud y longitud.");
+  if(nocode) issues.push(`${nocode} fila${nocode>1?"s":""} sin código: se les asignará uno automáticamente.`);
+  return {out,issues,nNew,nUpd,nSame,nNoXY,nOut,nFields,utm,swapped};
+}
+function showMapping(){
+  const opts = (sel)=>`<option value="__extra"${sel==="__extra"?" selected":""}>Conservar como campo adicional</option><option value="__skip"${sel==="__skip"?" selected":""}>No importar</option><option value="__coords"${sel==="__coords"?" selected":""}>Coordenadas combinadas (lat lon)</option><optgroup label="Campos de la ficha">${SCHEMA.map(f=>`<option value="${f.key}"${sel===f.key?" selected":""}>${esc(f.label)}</option>`).join("")}</optgroup>`;
+  const sample = c => { const v=IMP.rows.find(r=>!isEmpty(r[c])); return v? (v[c] instanceof Date? v[c].toISOString().slice(0,10) : String(v[c])) : ""; };
+  const recog = Object.values(IMP.map).filter(k=>!k.startsWith("__")).length;
+  const o=openModal(`${mhead("Revisar columnas", "Paso 2 de 2")}
+    <div class="mbody">
+      <p><b>${esc(IMP.name)}</b> · ${IMP.rows.length} filas · ${IMP.cols.length} columnas, ${recog} reconocidas como campos de la ficha. Revisá la correspondencia antes de importar.</p>
+      <div class="maptable-wrap"><table class="t maptable"><thead><tr><th>Columna del archivo</th><th>Ejemplo</th><th>Se carga en</th></tr></thead><tbody>
+      ${IMP.cols.map((c,i)=>`<tr class="${IMP.map[c].startsWith("__")?"unmapped":""}"><td class="mono">${esc(c==="__lat"?"(geometría) latitud":c==="__lon"?"(geometría) longitud":c)}</td><td class="sample" title="${esc(sample(c))}">${esc(sample(c))}</td><td><select data-col="${i}" aria-label="Destino de ${esc(c)}">${opts(IMP.map[c])}</select></td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="opts">
+        <label><input type="radio" name="impmode" value="merge"${IMP.mode==="merge"?" checked":""}><span>Combinar con las fichas actuales<small>Actualiza las fichas con el mismo código, agrega las nuevas y conserva el resto. Cada cambio queda en el historial.</small></span></label>
+        <label><input type="radio" name="impmode" value="replace"${IMP.mode==="replace"?" checked":""}><span>Reemplazar todas las fichas${state.source.demo?" (recomendado para reemplazar los datos de ejemplo)":""}<small>Las ${state.records.length} fichas actuales se reemplazan por las del archivo.</small></span></label>
+        <label><input type="checkbox" id="fixSwap"${IMP.fixSwap?" checked":""}><span>Corregir coordenadas invertidas<small>Si latitud y longitud vienen cruzadas y al invertirlas caen en el área del censo.</small></span></label>
+      </div>
+      <div class="fld" style="margin:14px 0 0;max-width:340px"><label for="impWho">Registrado por</label><input id="impWho" type="text" placeholder="Nombre y apellido" autocomplete="name" value="${esc(state.editor)}"><span class="hint">Queda en el historial de cada ficha que cambie.</span></div>
+      <div class="preview" id="impPrev"></div>
+      <div id="impIssues"></div>
+    </div>
+    <div class="mfoot"><button class="btn" id="impBack">Volver</button><button class="btn primary" id="impGo">Importar</button></div>`, "wide");
+  o.querySelectorAll("select[data-col]").forEach(s=>s.onchange=()=>{ const c=IMP.cols[+s.dataset.col]; const v=s.value; if(!v.startsWith("__")) for(const k in IMP.map) if(IMP.map[k]===v && k!==c){ IMP.map[k]="__extra"; o.querySelector(`select[data-col="${IMP.cols.indexOf(k)}"]`).value="__extra"; } IMP.map[c]=v; s.closest("tr").className=v.startsWith("__")?"unmapped":""; refreshPreview(); });
+  o.querySelectorAll("input[name=impmode]").forEach(r=>r.onchange=()=>{ IMP.mode=r.value; refreshPreview(); });
+  $("#fixSwap").onchange=e=>{ IMP.fixSwap=e.target.checked; refreshPreview(); };
+  $("#impBack").onclick=openImport;
+  $("#impGo").onclick=doImport;
+  refreshPreview();
+}
+function refreshPreview(){
+  const mv=Object.values(IMP.map); const hasXY=(mv.includes("latitud")&&mv.includes("longitud"))||mv.includes("__coords");
+  IMP.built=buildImport(); const b=IMP.built;
+  const merge=IMP.mode==="merge";
+  $("#impPrev").innerHTML = `<div class="pv"><div class="n">${b.nNew}</div><div class="l">fichas nuevas</div></div>
+    <div class="pv"><div class="n">${merge?b.nUpd:"—"}</div><div class="l">${merge?`actualizadas (${b.nFields} datos)`:"actualizadas (no aplica)"}</div></div>
+    <div class="pv${b.nNoXY?" warn":""}"><div class="n">${b.nNoXY}</div><div class="l">sin coordenadas</div></div>
+    <div class="pv${b.nOut?" warn":""}"><div class="n">${b.nOut}</div><div class="l">fuera del área</div></div>`;
+  $("#impIssues").innerHTML = (!hasXY?`<div class="callout warn">No se identificaron columnas de latitud y longitud. Indicá cuáles son en la tabla, o las fichas se importarán sin ubicación.</div>`:"")
+    + (b.issues.length?`<details class="issues"${b.issues.length<=6?" open":""}><summary>${b.issues.length===1?"1 observación":b.issues.length+" observaciones"} sobre el archivo</summary><ul>${b.issues.slice(0,60).map(i=>`<li>${esc(i)}</li>`).join("")}${b.issues.length>60?`<li>y ${b.issues.length-60} más</li>`:""}</ul></details>`:"");
+  const tot=b.nNew+(merge?b.nUpd:0);
+  $("#impGo").textContent = merge ? (tot?`Importar ${b.nNew} nuevas y actualizar ${b.nUpd}`:"Nada nuevo para importar") : `Reemplazar con ${b.out.length} fichas`;
+  $("#impGo").disabled = merge && !tot;
+}
+function doImport(){
+  const who=$("#impWho").value.trim(); if(!who){ $("#impWho").focus(); toast("Escribí quién registra esta carga."); return; } state.editor=who;
+  const b=IMP.built; const at=nowISO(); const origen="Archivo: "+IMP.name; const ed=who;
+  if(IMP.mode==="replace"){
+    state.records=[]; state.history.push({at,codigo:"*",campo:"Reemplazo total",campoKey:"",antes:"",despues:`${b.out.length} fichas`,editor:ed,origen});
+  }
+  const ex=byCode(); let nN=0,nU=0;
+  for(const r of b.out){
+    delete r.__swapped;
+    if(r.__autocode){ delete r.__autocode; r.codigo=nextCode(r.embalse); }
+    const cur=ex.get(r.codigo.toUpperCase());
+    if(cur){
+      let ch=0;
+      for(const f of SCHEMA){ if(r[f.key]===""||String(cur[f.key]??"")===String(r[f.key])) continue; state.history.push({at,codigo:cur.codigo,campo:f.label,campoKey:f.key,antes:String(cur[f.key]??""),despues:String(r[f.key]),editor:ed,origen}); cur[f.key]=r[f.key]; ch++; }
+      for(const [k,v] of Object.entries(r._extra)){ if(String(cur._extra?.[k]??"")!==String(v)){ cur._extra=cur._extra||{}; cur._extra[k]=v; ch++; } }
+      if(ch){ cur._actualizado=at; nU++; }
+    } else {
+      r._creado=at; r._origen=origen; state.records.push(r); ex.set(r.codigo.toUpperCase(), r); nN++;
+      if(IMP.mode==="merge") state.history.push({at,codigo:r.codigo,campo:"Ficha creada",campoKey:"",antes:"",despues:"Nueva en la entrega",editor:ed,origen});
+    }
+  }
+  state.source={label:IMP.name, demo:false, at};
+  state.selected=null; state.editing=null;
+  save(); closeModal(); renderAll(); fitAll();
+  toast(IMP.mode==="replace" ? `Se cargaron ${state.records.length} fichas desde ${IMP.name}.` : `${nN} fichas nuevas y ${nU} actualizadas desde ${IMP.name}.`);
+}
+
+/* ---------- capas de referencia ---------- */
+$("#btnRef").onclick=()=>$("#refFile").click();
+$("#refFile").addEventListener("change", async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{
+    const txt=await f.text(); let gj;
+    if(/\.kml$/i.test(f.name)){ if(typeof toGeoJSON==="undefined") throw new Error("lector KML no disponible"); gj=toGeoJSON.kml(new DOMParser().parseFromString(txt,"text/xml")); }
+    else gj=JSON.parse(txt);
+    const color = ["#7a3fb0","#0f7a62","#b0306e","#3f5fb0"][state.refLayers.length%4];
+    const layer=L.geoJSON(gj,{pane:"ref",style:()=>({color,weight:2,fillColor:color,fillOpacity:.12,dashArray:"5 4"}),pointToLayer:(ft,ll)=>L.circleMarker(ll,{pane:"ref",radius:4,color,weight:1.5,fillOpacity:.6}),onEachFeature:(ft,l)=>{ const p=ft.properties||{}; const k=Object.keys(p).slice(0,6); if(k.length) l.bindTooltip(k.map(x=>`<b>${esc(x)}</b>: ${esc(p[x])}`).join("<br>")); }}).addTo(map);
+    const n=(gj.features||[]).length;
+    state.refLayers.push({name:f.name,layer,color,n});
+    renderRefs(); try{ map.fitBounds(layer.getBounds(),{padding:[30,30]}); }catch(_){}
+    toast(`Capa “${f.name}” agregada (${n} elementos). Solo se muestra en esta sesión.`);
+  }catch(err){ toast("No se pudo leer la capa: "+(err.message||err)); }
+});
+function renderRefs(){
+  $("#reflist").innerHTML = state.refLayers.length ? state.refLayers.map((r,i)=>`<div class="refitem"><input type="checkbox" data-ref="${i}" checked aria-label="Mostrar ${esc(r.name)}"><span style="width:10px;height:10px;border:2px dashed ${r.color};border-radius:2px"></span><span class="nm" title="${esc(r.name)}">${esc(r.name)}</span><button class="x" data-rmref="${i}" aria-label="Quitar ${esc(r.name)}">${ICON.x}</button></div>`).join("") : `<span style="font-size:12px;color:var(--ink-3)">Por ejemplo: cota 223, franja de dominio o zonas de obra.</span>`;
+  $("#reflist").querySelectorAll("[data-ref]").forEach(c=>c.onchange=()=>{ const r=state.refLayers[+c.dataset.ref]; c.checked?r.layer.addTo(map):map.removeLayer(r.layer); });
+  $("#reflist").querySelectorAll("[data-rmref]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.rmref; map.removeLayer(state.refLayers[i].layer); state.refLayers.splice(i,1); renderRefs(); });
+}
+
+/* ---------- exportación ---------- */
+let DL=null;
+async function saveFile(filename, data, mime){
+  if(DL===null && window.claude && typeof window.claude.use==="function"){ try{ DL = await window.claude.use("downloads"); }catch(e){ DL=false; } }
+  if(DL){ try{ await DL.save({filename, data}); return true; }catch(err){ if(err && err.code==="declined") return false; toast("No se pudo guardar el archivo aquí ("+(err&&err.code||"error")+")."); return false; } }
+  if(window.claude){ toast("La descarga de archivos no está disponible en esta vista."); return false; }
+  const blob = data instanceof Blob ? data : new Blob([data],{type:mime||"application/octet-stream"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); return true;
+}
+function exportRows(rows, anon){
+  const extraKeys=[...new Set(rows.flatMap(r=>Object.keys(r._extra||{})))];
+  return rows.map(r=>{
+    const o={};
+    for(const f of SCHEMA){ let v=r[f.key]; if(anon && f.sensitive) v=""; if(anon && (f.key==="latitud"||f.key==="longitud") && v!=="") v=+(+v).toFixed(3); o[f.key]=v; }
+    const iv=ivh(r); o.ivh_puntaje=iv.score??""; o.ivh_nivel=iv.nivel;
+    for(const k of extraKeys) o[k]=(r._extra||{})[k]??"";
+    for(const [g,G] of Object.entries(GRUPOS)){ const L_=scenList(g); if(!L_.length) continue; const pre=g==="crecida"?"crecida":"nivel_"+g;
+      for(const s of L_){ const e=expo(s,r); const n=scenName(s); o[`${pre}_${n}`]=e?expoStatus(s,r):""; o[`${pre}_${n}_dist_m`]=e?(e.in?0:(isFinite(e.d)?e.d:"")):""; }
+      const fr=firstReach(r,g); o[`${pre}_primer_escenario_que_alcanza`]=fr?scenName(fr):""; }
+    if(esSitio(r)){ o.nombre_sitio=r.nombre_sitio||""; o.categoria_sitio=r.categoria_sitio||""; }
+    o.ultima_modificacion=r._actualizado||""; o.origen_registro=r._origen||"";
+    return o;
+  });
+}
+function dictRows(){ return SCHEMA.map(f=>({campo:f.key, etiqueta:f.label, seccion:GROUPS.find(g=>g[0]===f.group)[1], tipo:{text:"Texto",number:"Número",coord:"Coordenada decimal (WGS84)",select:"Opción única",multi:"Opciones múltiples separadas por punto y coma",date:"Fecha (AAAA-MM-DD)",textarea:"Texto largo",scale:"Escala 1 a 5"}[f.type], valores_permitidos:(f.options||[]).join(" | "), dato_personal:f.sensitive?"Sí":"" })); }
+function openExport(){
+  const nv=visible().length, nt=state.records.length;
+  openModal(`${mhead("Exportar fichas")}
+    <div class="mbody">
+      <div class="opts" style="margin-top:0">
+        <div class="flabel">Formato</div>
+        <label><input type="radio" name="xfmt" value="xlsx" checked><span>Excel<small>Hoja de fichas con el IVH calculado, hoja de historial de cambios y diccionario de campos.</small></span></label>
+        <label><input type="radio" name="xfmt" value="geojson"><span>GeoJSON<small>Puntos con todos los atributos, para QGIS o ArcGIS.</small></span></label>
+        <label><input type="radio" name="xfmt" value="csv"><span>CSV<small>Tabla plana separada por comas, en UTF-8.</small></span></label>
+        <div class="flabel" style="margin-top:6px">Fichas</div>
+        <label><input type="radio" name="xscope" value="all" checked><span>Todas (${nt})</span></label>
+        <label><input type="radio" name="xscope" value="vis"${nv===nt?" disabled":""}><span>Solo las que cumplen los filtros actuales (${nv})</span></label>
+        <div class="flabel" style="margin-top:6px">Datos personales</div>
+        <label><input type="checkbox" id="xanon"><span>Anonimizar para compartir<small>Quita el nombre del referente y redondea las coordenadas a unos 100 m.</small></span></label>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="xGo">Exportar</button></div>`, "narrow");
+  $("#xGo").onclick=async()=>{
+    const fmt=document.querySelector("input[name=xfmt]:checked").value, scope=document.querySelector("input[name=xscope]:checked").value, anon=$("#xanon").checked;
+    const rows=exportRows(scope==="vis"?visible():state.records, anon);
+    const stamp=new Date().toISOString().slice(0,10); const base=`censo_hidrosocial_${stamp}${anon?"_anonimizado":""}`;
+    let ok=false;
+    if(fmt==="xlsx"){
+      if(typeof XLSX==="undefined"){ toast("El generador de Excel no se cargó. Probá CSV."); return; }
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "fichas");
+      const codes=new Set(rows.map(r=>r.codigo));
+      const hist=state.history.filter(h=>h.codigo==="*"||codes.has(h.codigo)).map(h=>({fecha:h.at,ficha:h.codigo,campo:h.campo,valor_anterior:anon&&BYKEY[h.campoKey]?.sensitive?"":h.antes,valor_nuevo:anon&&BYKEY[h.campoKey]?.sensitive?"":h.despues,registrado_por:h.editor,origen:h.origen}));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hist.length?hist:[{fecha:"",ficha:"",campo:"",valor_anterior:"",valor_nuevo:"",registrado_por:"",origen:""}]), "historial");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dictRows()), "diccionario");
+      const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+      ok=await saveFile(base+".xlsx", new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+    } else if(fmt==="csv"){
+      const cols=Object.keys(rows[0]||{}); const q=v=>{ const s=String(v??""); return /[",\n;]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; };
+      const csv="﻿"+[cols.join(","), ...rows.map(r=>cols.map(c=>q(r[c])).join(","))].join("\n");
+      ok=await saveFile(base+".csv", csv, "text/csv");
+    } else {
+      const gj={type:"FeatureCollection",features:rows.filter(r=>r.latitud!==""&&r.longitud!=="").map(r=>({type:"Feature",geometry:{type:"Point",coordinates:[+r.longitud,+r.latitud]},properties:r}))};
+      ok=await saveFile(window.claude?base+"_geojson.json":base+".geojson", JSON.stringify(gj), "application/geo+json");
+    }
+    if(ok){ closeModal(); toast("Archivo exportado."); }
+  };
+}
+async function downloadTemplate(){
+  if(typeof XLSX==="undefined"){ toast("El generador de Excel no se cargó."); return; }
+  const wb=XLSX.utils.book_new();
+  const ex=Object.fromEntries(SCHEMA.map(f=>[f.key,""]));
+  Object.assign(ex,{codigo:"HS-YG-0001",fecha_relevamiento:"2026-11-03",encuestador:"E01",embalse:"Yguazú",departamento:"Alto Paraná",distrito:"Yguazú",localidad:"(ejemplo)",latitud:-25.329781,longitud:-55.159579,precision_gps_m:5,tipo_unidad:"Hogar",sexo_jefatura:"Mujer",integrantes:4,menores_14:2,mayores_65:0,tenencia:"Título de propiedad",franja_dominio:"Fuera",distancia_costa_m:350,fuente_agua_consumo:"Pozo somero propio",usos_agua:"Consumo humano; Pesca de subsistencia",actividad_principal:"Agricultura familiar",dependencia_embalse:"Media",conoce_descenso:"No",preocupacion_descenso:3,afectaciones_previstas:"Pozo somero; Pesca",reclamo_previo:"No",estado_ficha:"Relevada",observaciones:"Fila de ejemplo: borrar antes de cargar"});
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([ex]), "fichas");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dictRows()), "diccionario");
+  const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+  if(await saveFile("plantilla_censo_hidrosocial.xlsx", new Blob([buf]))) toast("Plantilla descargada.");
+}
+
+/* ---------- historial global ---------- */
+function openHistory(){
+  const render=(q="")=>{
+    const nq=norm(q);
+    const rows=state.history.slice().reverse().filter(h=>!nq||norm([h.codigo,h.campo,h.editor,h.origen,h.despues].join(" ")).includes(nq)).slice(0,400);
+    $("#histBody").innerHTML = rows.length ? `<div style="overflow-x:auto"><table class="t"><thead><tr><th>Fecha</th><th>Ficha</th><th>Cambio</th><th>Registrado por</th><th>Origen</th></tr></thead><tbody>${rows.map(h=>`<tr><td style="white-space:nowrap">${esc(fmtDT(h.at))}</td><td class="mono">${h.codigo==="*"?"Todas":`<button class="linkbtn mono" data-goto="${esc(h.codigo)}">${esc(h.codigo)}</button>`}</td><td><b>${esc(h.campo)}</b>${h.antes!==""?`: <del style="color:var(--bad)">${esc(maskIf(h.campoKey,h.antes))}</del> →`:h.despues!==""?":":""} ${esc(maskIf(h.campoKey,h.despues))}</td><td>${esc(h.editor)}</td><td style="color:var(--ink-3)">${esc(h.origen)}</td></tr>`).join("")}</tbody></table></div>` : `<p style="color:var(--ink-3)">No hay cambios que coincidan.</p>`;
+    $("#histBody").querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>{ closeModal(); select(b.dataset.goto); });
+  };
+  openModal(`${mhead("Historial de cambios", `${state.history.length} registros`)}
+    <div class="mbody"><div class="search" style="margin-bottom:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="hq" type="search" placeholder="Filtrar por ficha, campo, persona u origen" aria-label="Filtrar historial"></div><div id="histBody"></div></div>`, "wide");
+  render(); $("#hq").oninput=e=>render(e.target.value);
+}
+
+/* ---------- acerca de ---------- */
+function openAbout(){
+  openModal(`${mhead("Acerca de este prototipo")}
+    <div class="mbody about">
+      <p>Visor para consultar, ubicar y actualizar las fichas del censo hidrosociológico del entorno de los embalses Acaray e Yguazú. Está pensado para que el equipo social reciba las entregas de la encuestadora, las revise en el territorio y mantenga cada ficha al día con un registro de quién cambió qué y cuándo.</p>
+      <h3>Qué muestra</h3>
+      <ul>
+        <li>Carga de entregas en Excel, CSV o GeoJSON, con reconocimiento de columnas, conversión de UTM y detección de coordenadas invertidas o fuera del área.</li>
+        <li>Ubicación de cada ficha en el mapa, filtros por embalse, distrito, tipo de unidad, estado, franja de dominio y vulnerabilidad.</li>
+        <li>Edición de fichas, alta de casos nuevos marcando el punto en el mapa y reubicación arrastrando el marcador.</li>
+        <li>Historial de cambios por ficha y general, exportable junto con las fichas.</li>
+        <li>Sitios de interés ya visitados por el equipo (73, del KMZ del Embalse Yguazú) y resultados de las encuestas de depleción de julio y agosto de 2025 (77: acceso al agua, agricultura y ganadería, pesca y otras observaciones), incorporados como fichas con contorno oscuro y filtro propio. En las encuestas se omitieron nombres y teléfonos de las personas entrevistadas.</li>
+        <li>Estaciones hidrometeorológicas de la cuenca (25) como capa aparte. En la pestaña Hidrología cada estación tiene sus series (lluvia, caudal, nivel, temperatura, humedad o cota), el nivel medido del Yguazú puede mover la extensión del embalse en el mapa, hay una proyección a 30 días con tres supuestos de lluvia y umbrales de nivel que arman la lista de fichas a contactar. Las series actuales son simuladas, y se reemplazan cargando los datos reales en CSV o Excel.</li>
+        <li>Escenarios de agua en tres pestañas: crecidas por caudal y niveles de los embalses Yguazú y Acaray. Al elegir un nivel, el embalse cambia de extensión en el mapa. Los niveles incluidos son simulaciones ilustrativas hasta cargar las superficies del estudio (KML, KMZ o GeoJSON).</li>
+        <li>Escenarios de crecida: manchas de inundación por caudal (KML, KMZ o GeoJSON). Para cada escenario se ve qué fichas quedan dentro o cerca del borde, cuántas personas declaran esas fichas y cuál es el primer escenario que alcanza cada una.</li>
+        <li>Capas de referencia propias (por ejemplo la franja de dominio o zonas de obra) en GeoJSON o KML.</li>
+      </ul>
+      <h3>Datos de ejemplo</h3>
+      <p>Las ${SAMPLE.length} fichas del censo de ejemplo son ficticias (los ${SITES.length} sitios visitados, las ${SURVEYS.length} encuestas de depleción y las estaciones son datos reales del equipo): personas, localidades y respuestas generadas para la demostración, ubicadas alrededor del contorno aproximado del embalse. El índice de vulnerabilidad (IVH) es ilustrativo y debe calibrarse con el equipo.</p>
+      <h3>Dónde quedan los datos</h3>
+      <p>En este prototipo, los cambios se guardan solo en el navegador de quien los hace. Cada persona ve su propia copia. Para compartir el estado actual, exportá el Excel. Una versión institucional debería funcionar en un servidor de la ANDE, con usuarios, permisos por rol y respaldo, en línea con la Ley 1682/01 de protección de datos personales.</p>
+      <h3>Cartografía</h3>
+      <p>Límites distritales de geoBoundaries (CC BY 4.0). Embalse Yguazú, ríos y rutas de Natural Earth, a escala regional; el contorno del embalse Yguazú es aproximado. El cauce del Acaray y los escenarios Q700, Q1400, Q2300 y Q2900 provienen de los KML del equipo, simplificados a unos 4 m. La ubicación de la presa Yguazú es aproximada. La imagen satelital solo funciona al abrir el archivo HTML fuera de Claude.</p>
+    </div>
+    <div class="mfoot"><span class="spacer" id="rsMsg"></span><button class="btn danger" id="btnReset">Restablecer datos de ejemplo</button><button class="btn primary" data-close>Cerrar</button></div>`);
+  let armed=false;
+  $("#btnReset").onclick=()=>{ if(!armed){ armed=true; $("#btnReset").textContent="Confirmar: borrar cambios y volver al ejemplo"; $("#rsMsg").textContent="Se perderán las fichas y el historial guardados en este navegador."; return; } resetSample(); state.selected=null; state.filters={q:"",embalse:"",distrito:"",tipo:"",estado:"",franja:"",ivh:"",stat:"",origen:""}; $("#q").value=""; save(); closeModal(); renderAll(); fitAll(); toast("Se restablecieron los datos de ejemplo."); };
+}
+
+/* ============================================================
+   ESCENARIOS DE AGUA: crecidas por caudal y niveles de cada embalse
+   ============================================================ */
+const SCEN_KEY = "censo-hidrosocial-escenarios-v2";
+const SCEN_RAMP = ["#0d366b","#184f95","#256abf","#3987e5","#6da7ec","#9ec5f4","#cde2fb"];
+const GRUPOS = {
+  crecida:{label:"Crecidas", largo:"Crecidas por caudal", unidad:"m³/s", base:null},
+  yguazu:{label:"Embalse Yguazú", largo:"Nivel del embalse Yguazú", unidad:"msnm", base:"lake"},
+  acaray:{label:"Embalse Acaray", largo:"Nivel del embalse Acaray", unidad:"msnm", base:"cauce"}
+};
+const scen = { list:[], active:null, tab:"crecida", margin:50, showAll:false, removed:[], names:{}, values:{}, groups:{} };
+let scenLayer=null;
+function prepScenario(s){
+  const polys=[]; const g=s.geom;
+  const add=rings=>{ let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity; for(const p of rings[0]){ if(p[0]<a)a=p[0]; if(p[0]>c)c=p[0]; if(p[1]<b)b=p[1]; if(p[1]>d)d=p[1]; } polys.push({rings,bbox:[a,b,c,d]}); };
+  if(g.type==="Polygon") add(g.coordinates); else if(g.type==="MultiPolygon") g.coordinates.forEach(add);
+  s.polys=polys;
+  s.bbox=polys.reduce((m,p)=>[Math.min(m[0],p.bbox[0]),Math.min(m[1],p.bbox[1]),Math.max(m[2],p.bbox[2]),Math.max(m[3],p.bbox[3])],[Infinity,Infinity,-Infinity,-Infinity]);
+  s.cache=new Map();
+  if(!s.grupo) s.grupo="crecida";
+  return s;
+}
+const scenGroup = s => scen.groups[s.id] || s.grupo || "crecida";
+function scenList(grp){ return scen.list.filter(s=>!s.auto && !scen.removed.includes(s.id) && (!grp || scenGroup(s)===grp)).sort((a,b)=>(scenValue(a)??0)-(scenValue(b)??0)); }
+function scenById(id){ return scen.list.find(s=>s.id===id); }
+function scenName(s){ return scen.names[s.id] || s.nombre; }
+function scenValue(s){ return s.id in scen.values ? scen.values[s.id] : s.valor; }
+function scenColor(s){ const L=scenList(scenGroup(s)); const i=L.indexOf(s); if(L.length<=1) return SCEN_RAMP[2]; const idx=Math.round(i*(SCEN_RAMP.length-2)/(L.length-1)); return SCEN_RAMP[Math.min(SCEN_RAMP.length-1,idx)]; }
+/* Exposición de una ficha a un escenario: {in, d} (d en metros al borde; Infinity si está a más de 5 km) */
+function expo(s, r){
+  if(!s || !hasCoords(r)) return null;
+  const lat=+r.latitud, lon=+r.longitud, key=lat+"|"+lon;
+  if(s.cache.has(key)) return s.cache.get(key);
+  let res; const B=s.bbox, pad=0.05;
+  if(lon<B[0]-pad||lon>B[2]+pad||lat<B[1]-pad||lat>B[3]+pad) res={in:false,d:Infinity};
+  else {
+    let inside=false;
+    for(const p of s.polys){ const b=p.bbox; if(lon<b[0]||lon>b[2]||lat<b[1]||lat>b[3]) continue; if(pipPoly(lat,lon,p.rings)){ inside=true; break; } }
+    if(inside) res={in:true,d:0};
+    else { let d=Infinity; for(const p of s.polys){ const b=p.bbox; if(lon<b[0]-pad||lon>b[2]+pad||lat<b[1]-pad||lat>b[3]+pad) continue; const dd=distToLines(lat,lon,p.rings); if(dd<d) d=dd; } res={in:false,d:d>5000?Infinity:Math.round(d)}; }
+  }
+  s.cache.set(key,res); return res;
+}
+function expoStatus(s, r){ const e=expo(s,r); if(!e) return "Sin ubicación"; if(e.in) return "Dentro del área"; if(e.d<=scen.margin) return `A menos de ${scen.margin} m`; return "Fuera"; }
+function activeScen(){ return scen.active ? scenById(scen.active) : null; }
+function firstReach(r,grp){ for(const s of scenList(grp)){ const e=expo(s,r); if(e && e.in) return s; } return null; }
+function fmtDist(e){ if(!e) return "Sin ubicación"; if(e.in) return "—"; if(!isFinite(e.d)) return "más de 5 km"; return e.d>=1000?`${(e.d/1000).toFixed(1).replace(".",",")} km`:`${e.d} m`; }
+const fmtKm2 = v => (+v).toLocaleString("es-PY",{maximumFractionDigits:1});
+const usaEmbalse = r => ["Alta","Media"].includes(r.dependencia_embalse) || r.fuente_agua_consumo==="Toma directa del embalse" || splitMulti(r.usos_agua).some(u=>/Pesca|Abrevadero|Riego|Transporte|Turismo|Acuicultura/.test(u));
+
+function saveScen(){
+  try{ localStorage.setItem(SCEN_KEY, JSON.stringify({uploaded:scen.list.filter(s=>!s.embebido).map(({polys,cache,bbox,...s})=>s), removed:scen.removed, names:scen.names, values:scen.values, groups:scen.groups, active:scen.active, tab:scen.tab, margin:scen.margin, showAll:scen.showAll})); return true; }
+  catch(e){ return false; }
+}
+function loadScen(){
+  scen.list = SCENARIOS.map(s=>prepScenario(Object.assign({},s)));
+  try{
+    let s=JSON.parse(localStorage.getItem(SCEN_KEY)||"null");
+    if(!s){ const old=JSON.parse(localStorage.getItem("censo-hidrosocial-escenarios-v1")||"null"); if(old) s={uploaded:old.uploaded,removed:old.removed,names:old.names,values:old.values,margin:old.margin}; }
+    if(s){ (s.uploaded||[]).forEach(u=>scen.list.push(prepScenario(u))); scen.removed=s.removed||[]; scen.names=s.names||{}; scen.values=s.values||{}; scen.groups=s.groups||{}; scen.active=s.active&&scen.list.some(x=>x.id===s.active)?s.active:null; scen.tab=GRUPOS[s.tab]?s.tab:"crecida"; scen.margin=s.margin??50; scen.showAll=!!s.showAll; }
+  }catch(e){}
+  if(scen.active && scen.removed.includes(scen.active)) scen.active=null;
+}
+
+/* ---------- dibujo ---------- */
+function drawScen(){
+  if(scenLayer){ map.removeLayer(scenLayer); scenLayer=null; }
+  const a=activeScen(); const sat = state.base!=="carto";
+  // El contorno base del embalse se reemplaza por el nivel elegido
+  const replaced = a ? GRUPOS[scenGroup(a)].base : null;
+  if(overlay.lakeL) overlay.lakeL.setStyle({fillOpacity: replaced==="lake"||sat?0:1, opacity: replaced==="lake"?0:(sat?0:1)});
+  if(overlay.cauceL) overlay.cauceL.setStyle({fillOpacity: replaced==="cauce"||sat?0:1, opacity: replaced==="cauce"?0:(sat?0:1)});
+  const grp = scen.showAll ? scen.tab : (a ? scenGroup(a) : null);
+  if(!a && !scen.showAll) return;
+  scenLayer=L.layerGroup().addTo(map);
+  const list = scen.showAll ? scenList(grp).slice().reverse() : [a];
+  for(const s of list){
+    const isA = a && s.id===a.id; const lvl = GRUPOS[scenGroup(s)].base;
+    let st;
+    if(scen.showAll) st={color:isA?PALETTE["--ink"]:scenColor(s), weight:isA?1.2:.6, fillColor:scenColor(s), fillOpacity:sat?.45:.6, opacity:.9};
+    else if(lvl) st={color:PALETTE["--water-line"], weight:1, fillColor:PALETTE["--water-lvl"], fillOpacity:sat?.55:1, opacity:1};
+    else st={color:"#184f95", weight:.9, fillColor:PALETTE["--scen"], fillOpacity:sat?.4:.55, opacity:.8};
+    L.geoJSON(s.geom,{pane:"scen",interactive:false,style:()=>st}).addTo(scenLayer);
+  }
+}
+function renderScenCard(){
+  const card=$("#scenCard"); const tab=scen.tab; const L_=scenList(tab); const a=activeScen(); const aIn = a && scenGroup(a)===tab;
+  const tabs = `<div class="scen-tabs" role="tablist">${Object.entries(GRUPOS).map(([k,g])=>`<button role="tab" data-stab="${k}" aria-selected="${k===tab}">${esc(g.label)}${a&&scenGroup(a)===k?' <span class="dotact"></span>':''}</button>`).join("")}</div>`;
+  let body;
+  if(!L_.length){
+    body=`<p class="scen-empty">Todavía no hay superficies para ${esc(GRUPOS[tab].largo.toLowerCase())}. Cargá un KML, KMZ o GeoJSON por cada nivel o caudal.</p>`;
+  } else {
+    const rows=visible();
+    let info;
+    if(aIn){
+      let din=0,cer=0; rows.forEach(r=>{ const e=expo(a,r); if(!e) return; if(e.in) din++; else if(e.d<=scen.margin) cer++; });
+      info=`<b>${esc(scenName(a))}</b>${a.simulado?' <span class="pill warn">Simulado</span>':a.referencia?' <span class="pill">Referencia</span>':''} · ${fmtKm2(a.area_km2)} km² · <b>${din}</b> ficha${din===1?"":"s"} dentro · <b>${cer}</b> a menos de ${scen.margin} m`;
+    } else info = a ? `Activo: ${esc(scenName(a))} (${esc(GRUPOS[scenGroup(a)].label)}). Elegí uno de esta pestaña para cambiarlo.` : (GRUPOS[tab].base ? "Elegí un nivel para cambiar la extensión del embalse en el mapa." : "Elegí un escenario para ver qué fichas quedan dentro del área de agua.");
+    const sim = L_.some(s=>s.simulado);
+    body=`<div class="scen-seg" role="radiogroup" aria-label="Escenario activo">
+      <button role="radio" data-scen="" aria-checked="${!aIn}">Ninguno</button>
+      ${L_.map(s=>`<button role="radio" data-scen="${esc(s.id)}" aria-checked="${!!(a&&a.id===s.id)}" class="${s.simulado?"sim":""}" title="${esc(scenName(s))} · ${fmtKm2(s.area_km2)} km²${s.simulado?" · simulado":""}">${scen.showAll?`<i style="background:${scenColor(s)}"></i>`:""}${esc(scenName(s))}</button>`).join("")}
+    </div>
+    <div class="scen-info">${info}</div>
+    ${sim?`<div class="scen-note">Los niveles subrayados son simulaciones ilustrativas. Reemplazalos con las superficies estimadas del estudio.</div>`:""}`;
+  }
+  card.innerHTML = `<div class="scen-h"><span class="flabel">Escenarios de agua</span><span><button class="linkbtn" id="scenUp">Cargar</button> · <button class="linkbtn" id="scenManage">Administrar</button></span></div>${tabs}${body}
+    <div class="scen-opts"><label>Margen <select id="scenMargin" class="sel" aria-label="Margen de cercanía">${[0,25,50,100,200,500].map(m=>`<option value="${m}"${m===scen.margin?" selected":""}>${m} m</option>`).join("")}</select></label>
+      <label><input type="checkbox" id="scenAll"${scen.showAll?" checked":""}> Superponer la pestaña</label></div>`;
+  card.querySelectorAll("[data-stab]").forEach(b=>b.onclick=()=>{ scen.tab=b.dataset.stab; saveScen(); drawScen(); renderScenCard(); });
+  card.querySelectorAll("[data-scen]").forEach(b=>b.onclick=()=>setScen(b.dataset.scen||null));
+  $("#scenManage").onclick=openScenManager;
+  $("#scenUp").onclick=()=>$("#scenFile").click();
+  $("#scenMargin").onchange=e=>{ scen.margin=+e.target.value; saveScen(); scenChanged(); };
+  $("#scenAll").onchange=e=>{ scen.showAll=e.target.checked; saveScen(); drawScen(); renderScenCard(); };
+}
+function setScen(id){
+  const prev=scen.active; scen.active=id||null;
+  if(scen.active && state.colorBy!=="exposicion"){ state.prevColorBy=state.colorBy; state.colorBy="exposicion"; }
+  if(!scen.active && state.colorBy==="exposicion"){ state.colorBy=state.prevColorBy||"ivh"; }
+  if(!scen.active && state.filters.stat==="expuestas") state.filters.stat="";
+  if(scen.active) scen.tab=scenGroup(activeScen());
+  saveScen(); saveSoon();
+  scenChanged();
+  if(scen.active && !state.selected){ const s=activeScen(); const pg=prev&&scenById(prev); if(!pg || scenGroup(pg)!==scenGroup(s)){ try{ const b=s.bbox; map.flyToBounds([[b[1],b[0]],[b[3],b[2]]],{padding:[60,60],duration:.6,maxZoom:13}); }catch(e){} } }
+}
+function scenChanged(){ drawScen(); renderScenCard(); renderData(); renderDrawer(); }
+
+/* ---------- carga de archivos ---------- */
+function dpSimplify(pts, tol){
+  if(pts.length<=4) return pts;
+  const keep=new Uint8Array(pts.length); keep[0]=keep[pts.length-1]=1;
+  const stack=[[0,pts.length-1]]; const t2=tol*tol;
+  while(stack.length){ const [a,b]=stack.pop(); let md=0, mi=-1; const ax=pts[a][0],ay=pts[a][1],bx=pts[b][0],by=pts[b][1];
+    for(let i=a+1;i<b;i++){ const d=segDist(pts[i][0],pts[i][1],ax,ay,bx,by); if(d>md){ md=d; mi=i; } }
+    if(md*md>t2 && mi>0){ keep[mi]=1; stack.push([a,mi],[mi,b]); } }
+  return pts.filter((p,i)=>keep[i]);
+}
+function polysFromGeoJSON(gj){
+  const out=[];
+  const walk=g=>{ if(!g) return; if(g.type==="Polygon") out.push(g.coordinates); else if(g.type==="MultiPolygon") g.coordinates.forEach(c=>out.push(c)); else if(g.type==="GeometryCollection") g.geometries.forEach(walk); };
+  const feats = gj.type==="FeatureCollection"?gj.features:gj.type==="Feature"?[gj]:[{geometry:gj}];
+  feats.forEach(f=>walk(f.geometry));
+  return out.map(rings=>rings.map(r=>dpSimplify(r.map(p=>[+(+p[0]).toFixed(5),+(+p[1]).toFixed(5)]),0.00004)).filter(r=>r.length>=4)).filter(p=>p.length);
+}
+function ringArea(r){ let a=0; for(let i=0,j=r.length-1;i<r.length;j=i++){ a+=(r[j][0]*KX)*(r[i][1]*KY)-(r[i][0]*KX)*(r[j][1]*KY); } return Math.abs(a/2); }
+async function kmzToGeoJSON(file){
+  if(typeof JSZip==="undefined") throw new Error("no se pudo cargar el lector de KMZ");
+  const zip=await JSZip.loadAsync(await file.arrayBuffer());
+  const k=Object.keys(zip.files).find(n=>/\.kml$/i.test(n)); if(!k) throw new Error("el KMZ no contiene un KML");
+  return toGeoJSON.kml(new DOMParser().parseFromString(await zip.files[k].async("string"),"text/xml"));
+}
+async function fileToGeoJSON(file){
+  const ext=file.name.split(".").pop().toLowerCase();
+  if(ext==="kmz") return kmzToGeoJSON(file);
+  if(ext==="kml"){ if(typeof toGeoJSON==="undefined") throw new Error("no se pudo cargar el lector de KML"); return toGeoJSON.kml(new DOMParser().parseFromString(await file.text(),"text/xml")); }
+  return JSON.parse(await file.text());
+}
+async function readScenFile(file, grupo){
+  const polys=polysFromGeoJSON(await fileToGeoJSON(file));
+  if(!polys.length) throw new Error("el archivo no tiene polígonos");
+  const base=file.name.replace(/\.[^.]+$/,"").replace(/^[0-9a-f]{6,}-/i,"");
+  const m=base.match(/-?\d+(?:[.,]\d+)?/); const valor=m?parseNum(m[0]):null;
+  const area=polys.reduce((t,p)=>t+ringArea(p[0])-p.slice(1).reduce((h,r)=>h+ringArea(r),0),0)/1e6;
+  return prepScenario({id:"u"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), nombre:base, valor, grupo, area_km2:+area.toFixed(2), archivo:file.name, embebido:false, geom:{type:"MultiPolygon",coordinates:polys}});
+}
+$("#scenFile").addEventListener("change", async e=>{
+  const files=[...e.target.files]; e.target.value=""; if(!files.length) return;
+  const added=[];
+  for(const f of files){ try{ const s=await readScenFile(f, scen.tab); scen.list.push(s); added.push(s); }catch(err){ toast(`${f.name}: ${err.message||err}`); } }
+  if(!added.length) return;
+  const ok=saveScen();
+  toast(`${added.length} superficie${added.length>1?"s":""} cargada${added.length>1?"s":""} en ${GRUPOS[scen.tab].label}${ok?"":". Son muy pesadas para guardarlas en este navegador: se usan solo en esta sesión"}.`);
+  if(!scen.active) setScen(added[0].id); else scenChanged();
+  if($("#overlay") && $("#scenTable")) openScenManager();
+});
+function openScenManager(){
+  const L_=scen.list.filter(s=>!s.auto && !scen.removed.includes(s.id)).sort((a,b)=>Object.keys(GRUPOS).indexOf(scenGroup(a))-Object.keys(GRUPOS).indexOf(scenGroup(b)) || (scenValue(a)??0)-(scenValue(b)??0));
+  const removedEmb=scen.list.filter(s=>s.embebido && scen.removed.includes(s.id));
+  openModal(`${mhead("Escenarios de agua")}
+    <div class="mbody">
+      <p>Cada escenario es un polígono con la superficie que cubre el agua en una situación proyectada: una crecida (caudal) o un nivel del embalse (cota). Al elegir un nivel, el embalse cambia de extensión en el mapa y el visor calcula qué fichas quedan dentro, cerca o lejos del agua.</p>
+      <div style="overflow-x:auto" id="scenTable"><table class="t"><thead><tr><th></th><th>Nombre</th><th>Tipo</th><th class="num">Valor</th><th class="num">Área (km²)</th><th>Origen</th><th></th></tr></thead><tbody>
+      ${L_.map(s=>`<tr><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${scenColor(s)}"></span></td>
+        <td><input class="sel" style="height:28px;min-width:110px" data-sname="${esc(s.id)}" value="${esc(scenName(s))}" aria-label="Nombre del escenario"></td>
+        <td><select class="sel" style="height:28px" data-sgrp="${esc(s.id)}" aria-label="Tipo de escenario">${Object.entries(GRUPOS).map(([k,g])=>`<option value="${k}"${k===scenGroup(s)?" selected":""}>${esc(g.largo)}</option>`).join("")}</select></td>
+        <td class="num"><input class="sel" type="number" step="any" style="height:28px;width:90px" data-sval="${esc(s.id)}" value="${esc(scenValue(s)??"")}" aria-label="Valor del escenario"></td>
+        <td class="num">${fmtKm2(s.area_km2)}</td><td style="color:var(--ink-3);font-size:12px">${esc(s.archivo||"")}${s.simulado?" · simulado":s.embebido?" · incluido":""}</td>
+        <td><button class="btn small ghost" data-srm="${esc(s.id)}">Quitar</button></td></tr>`).join("") || `<tr><td colspan="7" style="color:var(--ink-3)">No hay escenarios cargados.</td></tr>`}
+      </tbody></table></div>
+      <div class="callout">Los archivos nuevos se cargan en la pestaña que esté abierta en el panel del mapa (ahora: <b>${esc(GRUPOS[scen.tab].largo)}</b>); el tipo se puede cambiar acá. El valor ordena los escenarios (caudal en m³/s o cota en msnm); se toma del nombre del archivo y se puede corregir. Las geometrías se simplifican a unos 4 m.</div>
+    </div>
+    <div class="mfoot">${removedEmb.length?`<button class="btn" id="scenRestore">Restaurar incluidos (${removedEmb.length})</button>`:""}<span class="spacer"></span><button class="btn" id="scenAdd">Cargar KML, KMZ o GeoJSON</button><button class="btn primary" data-close>Listo</button></div>`, "wide");
+  $("#scenAdd").onclick=()=>$("#scenFile").click();
+  if($("#scenRestore")) $("#scenRestore").onclick=()=>{ scen.removed=[]; saveScen(); scenChanged(); openScenManager(); };
+  document.querySelectorAll("[data-sname]").forEach(i=>i.onchange=()=>{ scen.names[i.dataset.sname]=i.value.trim()||undefined; saveScen(); scenChanged(); });
+  document.querySelectorAll("[data-sgrp]").forEach(i=>i.onchange=()=>{ scen.groups[i.dataset.sgrp]=i.value; saveScen(); scenChanged(); openScenManager(); });
+  document.querySelectorAll("[data-sval]").forEach(i=>i.onchange=()=>{ const s=scenById(i.dataset.sval); const v=parseNum(i.value); scen.values[s.id]=v===""?null:v; saveScen(); scenChanged(); openScenManager(); });
+  document.querySelectorAll("[data-srm]").forEach(b=>b.onclick=()=>{ const id=b.dataset.srm; const s=scenById(id); if(s.embebido) scen.removed.push(id); else scen.list=scen.list.filter(x=>x.id!==id); if(scen.active===id) setScen(null); saveScen(); scenChanged(); openScenManager(); });
+}
+
+/* ---------- vistas que usan los escenarios ---------- */
+function scenFichaHtml(r){
+  if(!scenList().length) return "";
+  if(!hasCoords(r)) return `<div class="grp"><h4>Escenarios de agua</h4><p style="color:var(--ink-3);margin:0">La ficha no tiene coordenadas.</p></div>`;
+  const a=activeScen();
+  let html=`<div class="grp"><h4>Escenarios de agua</h4>`;
+  for(const [g,G] of Object.entries(GRUPOS)){
+    const L_=scenList(g); if(!L_.length) continue;
+    const fr=firstReach(r,g);
+    html+=`<div class="scen-ficha-g"><div class="scen-first"><b>${esc(G.largo)}</b>: ${fr?`el primer escenario que la alcanza es <b>${esc(scenName(fr))}</b>.`:`ningún escenario cargado la alcanza.`}</div>
+      <table class="parts">${L_.map(s=>{ const e=expo(s,r); const st=expoStatus(s,r); const cls=st.startsWith("Dentro")?"bad":st.startsWith("A menos")?"warn":""; return `<tr${a&&a.id===s.id?' class="scen-row-active"':''}><td>${esc(scenName(s))}${s.simulado?' <span class="simtag">sim.</span>':''}</td><td class="v"><span class="pill ${cls}">${esc(st)}</span></td><td>${e&&e.in?"":"a "+fmtDist(e)+(G.base?" del agua":" del borde")}</td></tr>`; }).join("")}</table></div>`;
+  }
+  return html+`</div>`;
+}
+function scenSummaryHtml(rows){
+  if(!scenList().length) return "";
+  const pers=r=>{ const n=+r.integrantes; return Number.isFinite(n)?n:0; };
+  let html="";
+  for(const [g,G] of Object.entries(GRUPOS)){
+    const L_=scenList(g); if(!L_.length) continue;
+    const lvl=!!G.base;
+    html+=`<div><h3>${esc(G.largo)}</h3><div style="overflow-x:auto"><table class="t"><thead><tr><th>Escenario</th><th class="num">Dentro</th><th class="num">&lt; ${scen.margin} m</th>${lvl?`<th class="num">Usuarios lejos</th>`:`<th class="num">Personas</th>`}<th class="num">IVH alto</th></tr></thead><tbody>
+    ${L_.map(s=>{ let din=0,cer=0,p=0,ivhA=0,far=0; rows.forEach(r=>{ const e=expo(s,r); if(!e) return; const near=!e.in&&e.d<=scen.margin; if(e.in){ din++; p+=pers(r); } else if(near) cer++; if((e.in||near) && ivh(r).nivel==="Alta") ivhA++; if(lvl && !e.in && e.d>500 && usaEmbalse(r)) far++; }); return `<tr${scen.active===s.id?' class="scen-row-active"':''}><td><button class="linkbtn" data-sumscen="${esc(s.id)}">${esc(scenName(s))}</button>${s.simulado?' <span class="simtag">sim.</span>':''}<div style="font-size:11px;color:var(--ink-3)">${fmtKm2(s.area_km2)} km²</div></td><td class="num">${din}</td><td class="num">${cer}</td><td class="num">${lvl?far:p}</td><td class="num">${ivhA}</td></tr>`; }).join("")}
+    </tbody></table></div><p class="note">${lvl?`Usuarios lejos: fichas que usan el embalse (pesca, riego, abrevadero, cruce, turismo o toma directa) y quedan a más de 500 m del agua con ese nivel.`:`Personas: integrantes declarados en las fichas que quedan dentro.`} IVH alto: dentro o a menos de ${scen.margin} m.</p></div>`;
+  }
+  return html;
+}
+
+/* ============================================================
+   HIDROLOGÍA: estaciones con datos, nivel del embalse, proyección y umbrales
+   ============================================================ */
+const HYKEY = "censo-hidrosocial-hidro-v1";
+const VARS = {
+  lluvia_mm:{label:"Lluvia", unidad:"mm", dec:1, bar:true},
+  caudal_m3s:{label:"Caudal", unidad:"m³/s", dec:1},
+  nivel_m:{label:"Nivel del río", unidad:"m", dec:2},
+  cota_msnm:{label:"Cota del embalse", unidad:"msnm", dec:2},
+  temp_max_c:{label:"Temperatura máxima", unidad:"°C", dec:1},
+  temp_min_c:{label:"Temperatura mínima", unidad:"°C", dec:1},
+  humedad_pct:{label:"Humedad relativa", unidad:"%", dec:0}
+};
+const VAR_ALIAS = {lluvia:"lluvia_mm",precipitacion:"lluvia_mm",lluvia_mm:"lluvia_mm",pp:"lluvia_mm",caudal:"caudal_m3s",caudal_m3s:"caudal_m3s",q:"caudal_m3s",nivel:"nivel_m",nivel_m:"nivel_m",altura:"nivel_m",cota:"cota_msnm",cota_msnm:"cota_msnm",nivel_embalse:"cota_msnm",temp_max:"temp_max_c",temp_max_c:"temp_max_c",tmax:"temp_max_c",temp_min:"temp_min_c",temp_min_c:"temp_min_c",tmin:"temp_min_c",humedad:"humedad_pct",humedad_pct:"humedad_pct",hr:"humedad_pct"};
+const UMB_DEF = [
+  {id:"u1", nombre:"Atención", cota:220.5, criterio:"pozos", accion:"Aviso preventivo a las comunidades y seguimiento de pozos someros."},
+  {id:"u2", nombre:"Alerta", cota:219.0, criterio:"usuarios", accion:"Visitas y plan de abastecimiento alternativo (agua de consumo y abrevadero)."},
+  {id:"u3", nombre:"Crítico", cota:217.5, criterio:"pesca", accion:"Plan de contingencia, comunicación intensiva y refuerzo del mecanismo de quejas."}
+];
+const CRITERIOS = {
+  pozos:"Fichas con pozo somero o aljibe a menos de 2 km del agua a nivel normal",
+  usuarios:"Fichas que usan el embalse y quedarían a más de 500 m del agua con esa cota",
+  pesca:"Pescadores, balsas, embarcaderos y tomas directas del embalse"
+};
+const hy = { fechas:[], series:{}, idx:0, auto:false, esc:"normal", qout:HYDRO.qout, umbrales:UMB_DEF.map(u=>({...u})), simulado:HYDRO.simulado, cargas:[], playing:null, alertSets:{} };
+function hySave(){ try{ localStorage.setItem(HYKEY, JSON.stringify({fechas:hy.fechas, series:hy.series, idx:hy.idx, auto:hy.auto, esc:hy.esc, qout:hy.qout, umbrales:hy.umbrales, cargas:hy.cargas})); }catch(e){} }
+function hyLoad(){
+  hy.fechas=HYDRO.fechas.slice(); hy.series=JSON.parse(JSON.stringify(HYDRO.series));
+  try{ const s=JSON.parse(localStorage.getItem(HYKEY)||"null"); if(s){ hy.fechas=s.fechas||hy.fechas; hy.series=s.series||hy.series; hy.auto=!!s.auto; hy.esc=s.esc||"normal"; hy.qout=s.qout??HYDRO.qout; hy.umbrales=s.umbrales||hy.umbrales; hy.cargas=s.cargas||[]; hy.idx=Math.min(s.idx??hy.fechas.length-1, hy.fechas.length-1); return; } }catch(e){}
+  hy.idx=hy.fechas.length-1;
+}
+const stById = id => STATIONS.find(s=>s.id===id);
+const sv = (id,v) => hy.series[id+"|"+v];
+function lastValid(arr,i){ if(!arr) return null; for(let k=i;k>=0;k--) if(arr[k]!=null) return {i:k,v:arr[k]}; return null; }
+function acum(arr,i,n){ if(!arr) return null; let s=0,c=0; for(let k=Math.max(0,i-n+1);k<=i;k++){ if(arr[k]!=null){ s+=arr[k]; c++; } } return c?{v:s,comp:c/n}:null; }
+const fmtN = (v,d=1) => v==null||!isFinite(v)?"—":(+v).toLocaleString("es-PY",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtF = i => fmtD(hy.fechas[i]);
+const rainIds = () => STATIONS.filter(s=>sv(s.id,"lluvia_mm")).map(s=>s.id);
+function basinRain(i,n){ const vals=rainIds().map(id=>acum(sv(id,"lluvia_mm"),i,n)).filter(x=>x&&x.comp>=.6).map(x=>x.v); return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null; }
+function basinDaily(i){ const vals=rainIds().map(id=>sv(id,"lluvia_mm")[i]).filter(v=>v!=null); return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null; }
+function cotaAt(lim,i){ const a=sv(HYDRO.limni[lim],"cota_msnm"); const lv=lastValid(a,i); return lv?lv.v:null; }
+function qinAt(i){ let s=0,n=0; for(const id of HYDRO.afluentes){ const lv=lastValid(sv(id,"caudal_m3s"),i); if(lv){ s+=lv.v; n++; } } return n?s*HYDRO.factor:null; }
+function areaAt(c){ const C=HYDRO.curva; if(c<=C[0][0]) return C[0][1]*1e6; for(let k=1;k<C.length;k++){ if(c<=C[k][0]){ const t=(c-C[k-1][0])/(C[k][0]-C[k-1][0]); return (C[k-1][1]+t*(C[k][1]-C[k-1][1]))*1e6; } } return C[C.length-1][1]*1e6; }
+function project(i, esc, mult=1, days=30){
+  const h0=cotaAt("yguazu",i); if(h0==null) return null;
+  let q0=0,c=0; for(let k=i-2;k<=i;k++){ const q=qinAt(k); if(q!=null){ q0+=q; c++; } } q0=c?q0/c:HYDRO.clima.qin_normal_nov;
+  const qn=HYDRO.clima.qin_normal_nov; const out=[h0]; let h=h0;
+  for(let t=1;t<=days;t++){
+    const qs = Math.max(.35*q0, q0*Math.exp(-t/14));
+    let q = esc==="seco" ? qs : esc==="lluvioso" ? Math.max(qs, qn)*1.7 : Math.max(qs, qn);
+    h += (q*mult - hy.qout)*86400/areaAt(h); out.push(h);
+  }
+  return out;
+}
+function nearestLevel(c){
+  const all=scen.list.filter(s=>!scen.removed.includes(s.id) && scenGroup(s)==="yguazu");
+  const real=all.filter(s=>!s.simulado && !s.referencia);
+  const pool = real.length>=2 ? real : all;
+  return pool.reduce((b,s)=>!b||Math.abs(scenValue(s)-c)<Math.abs(scenValue(b)-c)?s:b,null);
+}
+function refLevel(){ const L_=scen.list.filter(s=>!scen.removed.includes(s.id) && scenGroup(s)==="yguazu"); return L_.find(s=>s.referencia) || L_.reduce((b,s)=>!b||scenValue(s)>scenValue(b)?s:b,null); }
+function umbralMembers(u){
+  const ref=refLevel(); const lvl=nearestLevel(u.cota); const set=new Set();
+  for(const r of state.records){
+    if(!hasCoords(r) || r.embalse==="Acaray") continue;
+    const er=ref?expo(ref,r):null;
+    if(u.criterio==="pozos"){ if(["Pozo somero propio","Aljibe o agua de lluvia"].includes(r.fuente_agua_consumo) && er && (er.in||er.d<=2000)) set.add(r.codigo); }
+    else if(u.criterio==="usuarios"){ const e=lvl?expo(lvl,r):null; if(usaEmbalse(r) && e && !e.in && e.d>500 && er && (er.in||er.d<=2000)) set.add(r.codigo); }
+    else if(u.criterio==="pesca"){ const p = r.actividad_principal==="Pesca" || splitMulti(r.usos_agua).some(x=>/Pesca|Transporte/.test(x)) || r.tipo_unidad==="Embarcadero o balsa" || r.fuente_agua_consumo==="Toma directa del embalse"; if(p && er && (er.in||er.d<=3000)) set.add(r.codigo); }
+  }
+  hy.alertSets[u.id]=set; return set;
+}
+function umbralEstado(u, h, proj){
+  if(h!=null && h<=u.cota) return {cls:"bad", txt:"Activo"};
+  if(proj){ const k=proj.findIndex(v=>v<=u.cota); if(k>0){ const d=new Date(hy.fechas[hy.idx]+"T12:00:00"); d.setDate(d.getDate()+k); return {cls:"warn", txt:`En ${k} días (${d.toLocaleDateString("es-PY",{day:"2-digit",month:"2-digit"})})`}; } }
+  return {cls:"", txt:"Sin riesgo a 30 días"};
+}
+
+/* ---------- gráficos SVG ---------- */
+function chartSVG(o){
+  const W=o.w||320, H=o.h||120, P={l:36,r:8,t:8,b:18};
+  const all=[]; o.series.forEach(s=>s.vals.forEach(v=>{ if(v!=null&&isFinite(v)) all.push(v); })); (o.thr||[]).forEach(t=>all.push(t.y)); if(o.band) o.band.forEach(b=>b&&all.push(b[0],b[1]));
+  if(!all.length) return `<div class="ch-empty">Sin datos en el período.</div>`;
+  let lo=o.min??Math.min(...all), hi=o.max??Math.max(...all); if(o.bar) lo=0; if(hi-lo<1e-6){ hi+=1; lo-=o.bar?0:1; }
+  const pad=(hi-lo)*.08; if(!o.bar) lo-=pad; hi+=pad;
+  const n=o.n; const X=i=>P.l+(W-P.l-P.r)*(n<=1?0:i/(n-1)); const Y=v=>P.t+(H-P.t-P.b)*(1-(v-lo)/(hi-lo));
+  const ticks=[lo+(hi-lo)*.1, (lo+hi)/2, hi-(hi-lo)*.1];
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" class="ch" role="img" aria-label="${esc(o.label||"Gráfico")}">`;
+  ticks.forEach(t=>{ g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" class="ch-grid"/><text x="${P.l-4}" y="${(Y(t)+3).toFixed(1)}" class="ch-ax" text-anchor="end">${fmtN(t,o.dec??1)}</text>`; });
+  (o.thr||[]).forEach(t=>{ g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${Y(t.y).toFixed(1)}" y2="${Y(t.y).toFixed(1)}" class="ch-thr ${t.cls||""}"/><text x="${W-P.r-2}" y="${(Y(t.y)-3).toFixed(1)}" class="ch-thrl ${t.cls||""}" text-anchor="end">${esc(t.label)}</text>`; });
+  if(o.band){ let up="",dn=""; o.band.forEach((b,i)=>{ if(!b) return; up+=`${up?"L":"M"}${X(i).toFixed(1)},${Y(b[1]).toFixed(1)}`; }); const rev=o.band.map((b,i)=>[b,i]).filter(x=>x[0]).reverse(); rev.forEach(([b,i])=>{ dn+=`L${X(i).toFixed(1)},${Y(b[0]).toFixed(1)}`; }); g+=`<path d="${up}${dn}Z" class="ch-band"/>`; }
+  if(o.bar){ const s=o.series[0]; const bw=Math.max(1,(W-P.l-P.r)/n-1); s.vals.forEach((v,i)=>{ if(v==null||v<=0) return; const y=Y(v); g+=`<rect x="${(X(i)-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(Y(0)-y).toFixed(1)}" rx="1" class="ch-bar"/>`; }); }
+  else o.series.forEach(s=>{ let d="",pen=false; s.vals.forEach((v,i)=>{ if(v==null||!isFinite(v)){ pen=false; return; } d+=`${pen?"L":"M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`; pen=true; }); g+=`<path d="${d}" class="ch-line ${s.cls||""}" fill="none"/>`; });
+  if(o.mark!=null){ g+=`<line x1="${X(o.mark).toFixed(1)}" x2="${X(o.mark).toFixed(1)}" y1="${P.t}" y2="${H-P.b}" class="ch-now"/>`; }
+  if(o.xl) g+=`<text x="${P.l}" y="${H-4}" class="ch-ax">${esc(o.xl[0])}</text>${o.xl[2]&&o.mark!=null?`<text x="${(X(o.mark)-4).toFixed(1)}" y="${P.t+10}" class="ch-ax" text-anchor="end">${esc(o.xl[2])}</text>`:""}<text x="${W-P.r}" y="${H-4}" class="ch-ax" text-anchor="end">${esc(o.xl[1])}</text>`;
+  g+=`<line class="ch-cursor" x1="0" x2="0" y1="${P.t}" y2="${H-P.b}" style="display:none"/><rect class="ch-hit" x="${P.l}" y="0" width="${W-P.l-P.r}" height="${H}" fill="transparent"/></svg>`;
+  return `<div class="ch-wrap" data-chart='${JSON.stringify({n, W, l:P.l, r:P.r, labels:o.labels, s:o.series.map(s=>({name:s.name, vals:s.vals.map(v=>v==null?null:+(+v).toFixed(o.dec??2))})), u:o.unidad||"", dec:o.dec??1}).replace(/'/g,"&#39;")}'><div class="ch-read">${esc(o.readDefault||"")}</div>${g}</div>`;
+}
+function bindCharts(root){
+  root.querySelectorAll(".ch-wrap").forEach(w=>{
+    const cfg=JSON.parse(w.dataset.chart); const svg=w.querySelector("svg"); const read=w.querySelector(".ch-read"); const cur=w.querySelector(".ch-cursor"); const def=read.textContent;
+    const move=e=>{ const b=svg.getBoundingClientRect(); const x=(e.clientX-b.left)/b.width*cfg.W; const t=(x-cfg.l)/(cfg.W-cfg.l-cfg.r); const i=Math.max(0,Math.min(cfg.n-1,Math.round(t*(cfg.n-1))));
+      const px=cfg.l+(cfg.W-cfg.l-cfg.r)*(cfg.n<=1?0:i/(cfg.n-1)); cur.setAttribute("x1",px); cur.setAttribute("x2",px); cur.style.display="";
+      read.textContent=`${cfg.labels[i]||""}: `+cfg.s.map(s=>`${s.name?s.name+" ":""}${s.vals[i]==null?"sin dato":fmtN(s.vals[i],cfg.dec)+" "+cfg.u}`).join(" · "); };
+    svg.addEventListener("pointermove",move); svg.addEventListener("pointerdown",move);
+    svg.addEventListener("pointerleave",()=>{ cur.style.display="none"; read.textContent=def; });
+  });
+}
+const dayLabels = (a,b) => hy.fechas.slice(a,b+1).map(fmtD);
+function addDays(iso,k){ const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+k); return d.toISOString().slice(0,10); }
+
+/* ---------- panel de hidrología ---------- */
+function renderHydro(){
+  const el=$("#paneHy"); if(!el || state.tab!=="hy") return;
+  const i=hy.idx, f=hy.fechas;
+  const h=cotaAt("yguazu",i), h7=cotaAt("yguazu",Math.max(0,i-7)), h30=cotaAt("yguazu",Math.max(0,i-30));
+  const projs={seco:project(i,"seco"), normal:project(i,"normal"), lluvioso:project(i,"lluvioso")};
+  const pSel=projs[hy.esc]; const pLo=project(i,hy.esc,.8), pHi=project(i,hy.esc,1.2);
+  const U=hy.umbrales.slice().sort((a,b)=>b.cota-a.cota);
+  const est=U.find(u=>h!=null&&h<=u.cota);
+  const span=120, a=Math.max(0,i-span);
+  const hist=sv(HYDRO.limni.yguazu,"cota_msnm").slice(a,i+1);
+  const n=hist.length+30;
+  const lbl=dayLabels(a,i).concat(Array.from({length:30},(_,k)=>fmtD(addDays(f[i],k+1))));
+  const pad=a=>Array(hist.length-1).fill(null).concat(a);
+  const cotaChart=chartSVG({w:330,h:150,n,label:"Cota del embalse Yguazú",unidad:"msnm",dec:2,labels:lbl,mark:hist.length-1,
+    series:[{name:"",vals:hist.concat(Array(30).fill(null)),cls:"main"},{name:"Proy.",vals:pad(pSel||[]),cls:"proj"}],
+    band:pLo&&pHi?pad(pLo.map((v,k)=>[Math.min(v,pHi[k]),Math.max(v,pHi[k])])):null,
+    thr:U.map(u=>({y:u.cota,label:`${u.nombre} ${fmtN(u.cota,1)}`,cls:u.id})), xl:[fmtD(f[a]),fmtD(addDays(f[i],30)),"hoy"], readDefault:"Pasá el cursor por el gráfico para ver cada día"});
+  const projTxt = pSel ? (()=>{ const end=pSel[pSel.length-1]; const cross=U.map(u=>({u,k:pSel.findIndex(v=>v<=u.cota)})).filter(x=>x.k>0).sort((a,b)=>a.k-b.k)[0]; return `En 30 días: <b>${fmtN(end,2)} msnm</b> (${end>=h?"+":"−"}${fmtN(Math.abs(end-h),2)} m).${cross?` Cruzaría <b>${esc(cross.u.nombre)}</b> en ${cross.k} días.`:" No cruza nuevos umbrales."}`; })() : "Sin datos de cota para proyectar.";
+  const r7=basinRain(i,7), r30=basinRain(i,30);
+  const ra=Math.max(0,i-59); const rainBars=chartSVG({w:330,h:90,n:i-ra+1,bar:true,label:"Lluvia media diaria en la cuenca",unidad:"mm",dec:1,labels:dayLabels(ra,i),series:[{name:"",vals:Array.from({length:i-ra+1},(_,k)=>basinDaily(ra+k))}],xl:[fmtD(f[ra]),fmtD(f[i])],readDefault:"Lluvia media diaria de los pluviómetros"});
+  const qa=Math.max(0,i-89); const qin=qinAt(i);
+  const qChart=chartSVG({w:330,h:90,n:i-qa+1,label:"Aporte de afluentes",unidad:"m³/s",dec:0,labels:dayLabels(qa,i),series:[{name:"Aporte",vals:Array.from({length:i-qa+1},(_,k)=>qinAt(qa+k)),cls:"main"},{name:"Descarga",vals:Array(i-qa+1).fill(hy.qout),cls:"out"}],xl:[fmtD(f[qa]),fmtD(f[i])],readDefault:"Aporte estimado frente a la descarga de la presa"});
+  const hA=cotaAt("acaray",i); const acA=Math.max(0,i-89);
+  const acChart=chartSVG({w:330,h:70,n:i-acA+1,label:"Cota del embalse Acaray",unidad:"msnm",dec:2,labels:dayLabels(acA,i),series:[{name:"",vals:sv(HYDRO.limni.acaray,"cota_msnm").slice(acA,i+1),cls:"main"}],xl:[fmtD(f[acA]),fmtD(f[i])],readDefault:""});
+  const stRows=STATIONS.map(s=>{ const st=stationStatus(s,i); return `<button class="st-row" data-st="${esc(s.id)}"><span class="st-ico st-mini${st.off?" off":""}">${stLetter(s.tipo)}</span><span class="mono">${esc(s.codigo)}</span><span class="nm">${esc(s.nombre)}</span><span class="vv">${st.txt}</span></button>`; }).join("");
+  const lvl=h!=null?nearestLevel(h):null;
+  el.innerHTML = `
+    <div class="hy-time">
+      <div class="hy-tl"><span>Datos al <b>${fmtF(i)}</b></span>${hy.simulado?'<span class="pill warn">Datos simulados</span>':""}</div>
+      <div class="hy-slider"><button class="btn small iconbtn" id="hyPlay" aria-label="${hy.playing?"Pausar":"Reproducir los últimos 4 meses"}">${hy.playing?"❚❚":"▶"}</button><input type="range" id="hyIdx" min="0" max="${f.length-1}" value="${i}" aria-label="Fecha de los datos"></div>
+      <div class="hy-tl2"><span>${fmtD(f[0])}</span><span>${fmtD(f[f.length-1])}</span></div>
+    </div>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Embalse Yguazú</h3><button class="linkbtn mono" data-st="${HYDRO.limni.yguazu}">${HYDRO.limni.yguazu}</button></div>
+      <div class="hy-big">${fmtN(h,2)}<small> msnm</small>${est?`<span class="pill ${est.id==="u1"?"warn":"bad"}">${esc(est.nombre)}</span>`:`<span class="pill good">Normal</span>`}</div>
+      <div class="hy-sub">7 días: ${h7!=null?(h-h7>=0?"+":"−")+fmtN(Math.abs(h-h7),2)+" m":"—"} · 30 días: ${h30!=null?(h-h30>=0?"+":"−")+fmtN(Math.abs(h-h30),2)+" m":"—"} · Aporte ${fmtN(qin,0)} m³/s · Descarga ${fmtN(hy.qout,0)} m³/s</div>
+      ${cotaChart}
+      <label class="hy-toggle"><input type="checkbox" id="hyAuto"${hy.auto?" checked":""}><span>Mostrar en el mapa el nivel medido${lvl?`<span class="hint">El mapa usa la superficie más cercana: ${esc(scenName(lvl))}</span>`:""}</span></label>
+      <div class="hy-proj">
+        <div class="flabel">Proyección a 30 días</div>
+        <div class="scen-seg" role="radiogroup" aria-label="Supuesto de lluvia">${[["seco","Sin lluvia"],["normal","Lluvia normal"],["lluvioso","Lluvioso"]].map(([k,l])=>`<button role="radio" data-esc="${k}" aria-checked="${hy.esc===k}">${l}</button>`).join("")}</div>
+        <p class="hy-ptxt">${projTxt}</p>
+        <div class="hy-prow"><label>Descarga de la presa <input type="number" id="hyQout" class="sel" value="${fmtN(hy.qout,0).replace(/\./g,"")}" step="5" min="0"> m³/s</label><button class="btn small" id="hyProjMap">Ver en el mapa</button></div>
+        <p class="note">Balance hídrico simple a calibrar por el equipo de hidrología. La banda muestra ±20% en el aporte.</p>
+      </div>
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Umbrales y fichas a contactar</h3></div>
+      <div class="umb">${U.map(u=>{ const set=umbralMembers(u); const st=umbralEstado(u,h,pSel); return `<div class="umb-row umb-${u.id}">
+        <div class="umb-a"><span class="umb-n">${esc(u.nombre)}</span><label class="umb-c">bajo <input type="number" step="0.1" class="sel" data-ucota="${u.id}" value="${u.cota}" aria-label="Cota del umbral ${esc(u.nombre)}"> msnm</label><span class="pill ${st.cls}">${st.txt}</span></div>
+        <div class="umb-b">${esc(CRITERIOS[u.criterio])}.</div>
+        <div class="umb-c2"><span><b>${set.size}</b> ficha${set.size===1?"":"s"}</span><button class="btn small" data-uver="${u.id}"${set.size?"":" disabled"}>Ver fichas</button></div>
+        <div class="umb-acc">${esc(u.accion)}</div></div>`; }).join("")}</div>
+      <p class="note">Umbrales y acciones son una propuesta a validar con el equipo. Las fichas se calculan con las superficies de agua cargadas para el Yguazú.</p>
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Lluvia en la cuenca</h3></div>
+      <div class="hy-kpis"><div><b>${fmtN(r7,0)}</b> mm<span>últimos 7 días</span></div><div><b>${fmtN(r30,0)}</b> mm<span>últimos 30 días</span></div><div><b>${rainIds().length}</b><span>estaciones con lluvia</span></div></div>
+      ${rainBars}
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Aporte de los afluentes al Yguazú</h3></div>
+      ${qChart}
+      <p class="note">Suma de las hidrométricas ${HYDRO.afluentes.join(", ")} con un factor de ${fmtN(HYDRO.factor,2)} por cuenca no aforada.</p>
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Embalse Acaray</h3><button class="linkbtn mono" data-st="${HYDRO.limni.acaray}">${HYDRO.limni.acaray}</button></div>
+      <div class="hy-big sm">${fmtN(hA,2)}<small> msnm</small></div>
+      ${acChart}
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Estaciones</h3><span class="hint">${STATIONS.filter(s=>stationStatus(s,i).off).length} sin datos recientes</span></div>
+      <div class="st-list">${stRows}</div>
+    </section>
+    <section class="hy-card">
+      <div class="hy-h"><h3>Datos de las estaciones</h3></div>
+      <p class="note" style="margin-top:0">Cargá un CSV o Excel con columnas fecha, estación, variable y valor (o una columna por variable). Se suman a las series existentes y reemplazan los valores de las mismas fechas.</p>
+      <div class="row"><button class="btn small" id="hyUp">Cargar datos de estaciones</button><button class="btn small ghost" id="hyTpl">Descargar plantilla</button></div>
+      ${hy.cargas.length?`<p class="note">Últimas cargas: ${hy.cargas.slice(-3).reverse().map(c=>`${esc(c.archivo)} (${c.n} valores, ${fmtDT(c.at)})`).join("; ")}</p>`:""}
+    </section>`;
+  bindCharts(el);
+  $("#hyIdx").oninput=e=>setHyIdx(+e.target.value, true);
+  $("#hyIdx").onchange=e=>setHyIdx(+e.target.value);
+  $("#hyPlay").onclick=togglePlay;
+  $("#hyAuto").onchange=e=>{ hy.auto=e.target.checked; hySave(); if(hy.auto) applyAutoLevel(true); else if(activeScen()&&activeScen().auto) setScen(null); renderHydro(); };
+  el.querySelectorAll("[data-esc]").forEach(b=>b.onclick=()=>{ hy.esc=b.dataset.esc; hySave(); renderHydro(); });
+  $("#hyQout").onchange=e=>{ const v=parseNum(e.target.value); if(v!==""){ hy.qout=v; hySave(); renderHydro(); } };
+  $("#hyProjMap").onclick=()=>{ const p=project(hy.idx,hy.esc); if(!p) return; hy.auto=false; hySave(); const s=nearestLevel(p[p.length-1]); if(s){ setScenKeep(s.id); toast(`Mapa con la extensión proyectada a 30 días (${esc(scenName(s))}, ${hy.esc==="seco"?"sin lluvia":hy.esc==="lluvioso"?"lluvioso":"lluvia normal"}).`); } renderHydro(); };
+  el.querySelectorAll("[data-ucota]").forEach(inp=>inp.onchange=()=>{ const u=hy.umbrales.find(x=>x.id===inp.dataset.ucota); const v=parseNum(inp.value); if(v!==""){ u.cota=v; hySave(); renderHydro(); } });
+  el.querySelectorAll("[data-uver]").forEach(b=>b.onclick=()=>{ const u=hy.umbrales.find(x=>x.id===b.dataset.uver); state.filters.alerta=u.id; state.alertaNombre=`${u.nombre} (bajo ${fmtN(u.cota,1)} msnm)`; setTab("list"); renderFilters(); renderData(); });
+  el.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>openStation(b.dataset.st));
+  $("#hyUp").onclick=()=>$("#hyFile").click();
+  $("#hyTpl").onclick=downloadHyTemplate;
+}
+function stationStatus(s,i){
+  const vars=Object.keys(VARS).filter(v=>sv(s.id,v));
+  let last=-1; vars.forEach(v=>{ const lv=lastValid(sv(s.id,v),i); if(lv&&lv.i>last) last=lv.i; });
+  const off = last<0 || i-last>3;
+  let txt;
+  if(sv(s.id,"cota_msnm")) txt=`${fmtN(lastValid(sv(s.id,"cota_msnm"),i)?.v,2)} msnm`;
+  else if(sv(s.id,"caudal_m3s")) txt=`${fmtN(lastValid(sv(s.id,"caudal_m3s"),i)?.v,0)} m³/s`;
+  else if(sv(s.id,"lluvia_mm")) txt=`${fmtN(acum(sv(s.id,"lluvia_mm"),i,7)?.v,0)} mm 7 d`;
+  else txt="—";
+  if(off) txt = last<0 ? "Sin datos" : `Sin datos desde ${fmtF(last)}`;
+  return {off, last, txt};
+}
+function setHyIdx(i, light){
+  hy.idx=Math.max(0,Math.min(hy.fechas.length-1,i));
+  if(!light) hySave();
+  updateStationIcons();
+  if(hy.auto) applyAutoLevel(false);
+  renderHydro();
+  if(state.station) renderDrawer();
+}
+function togglePlay(){
+  if(hy.playing){ clearInterval(hy.playing); hy.playing=null; hySave(); renderHydro(); return; }
+  if(hy.idx>=hy.fechas.length-1) hy.idx=Math.max(0,hy.fechas.length-121);
+  hy.playing=setInterval(()=>{ if(hy.idx>=hy.fechas.length-1){ clearInterval(hy.playing); hy.playing=null; hySave(); renderHydro(); return; } setHyIdx(hy.idx+2, true); }, 160);
+  renderHydro();
+}
+function setScenKeep(id){ const keep=state.colorBy; setScen(id); if(keep!=="exposicion"){ state.colorBy=keep; saveSoon(); renderData(); } }
+function applyAutoLevel(fly){
+  const h=cotaAt("yguazu",hy.idx); if(h==null) return;
+  const s=nearestLevel(h); if(!s || scen.active===s.id) return;
+  const keep=state.colorBy; scen.active=s.id; scen.tab="yguazu"; saveScen(); scenChanged();
+  if(keep!=="exposicion" && state.colorBy!==keep){ state.colorBy=keep; renderData(); }
+  if(fly){ try{ const b=s.bbox; map.flyToBounds([[b[1],b[0]],[b[3],b[2]]],{padding:[60,60],duration:.6,maxZoom:12}); }catch(e){} }
+}
+
+/* ---------- íconos de estaciones en el mapa ---------- */
+const stLetter = t => /Hidrometeorol/.test(t)?"HM":(/Hidrom/.test(t)&&/Pluvi/.test(t))?"HP":/Hidrom/.test(t)?"H":/Pluvi/.test(t)?"P":/Limni/.test(t)?"L":/Meteorol/.test(t)?"M":"·";
+const stMarkers = new Map();
+function stationIcon(s){
+  const st=stationStatus(s,hy.idx);
+  return L.divIcon({className:"st-icon",iconSize:[18,18],iconAnchor:[9,9],html:`<span class="st-ico${st.off?" off":""}">${stLetter(s.tipo)}</span><span class="st-lbl">${st.off?"sin datos":esc(st.txt.replace(" 7 d",""))}</span>`});
+}
+function buildStations(){
+  overlay.stations = L.layerGroup();
+  for(const s of STATIONS){
+    const m=L.marker([s.lat,s.lon],{pane:"stations",keyboard:false,icon:stationIcon(s)})
+      .bindTooltip(()=>{ const st=stationStatus(s,hy.idx); return `<b class="mono">${esc(s.codigo)}</b> · Estación ${esc(s.tipo.toLowerCase())}<br>${esc(s.nombre)}${s.distrito?"<br>"+esc(s.distrito):""}<br><span style="color:var(--ink-3)">${esc(st.txt)}</span>`; },{direction:"top",offset:[0,-8]});
+    m.on("click",ev=>{ L.DomEvent.stopPropagation(ev); openStation(s.id); });
+    overlay.stations.addLayer(m); stMarkers.set(s.id,m);
+  }
+  overlay.stations.addTo(map);
+}
+function updateStationIcons(){ for(const s of STATIONS){ const m=stMarkers.get(s.id); if(m) m.setIcon(stationIcon(s)); } }
+
+/* ---------- ficha de estación ---------- */
+function openStation(id){
+  state.selected=null; state.editing=null; state.station=id;
+  const s=stById(id); if(s && window.innerWidth>900) flyOffset([s.lat,s.lon], Math.max(map.getZoom(),11));
+  if(window.innerWidth<=900) $("#side").classList.remove("open");
+  updateSelRing(); renderDrawer();
+}
+function stationHtml(id){
+  const s=stById(id); const i=hy.idx; const st=stationStatus(s,i);
+  const vars=Object.keys(VARS).filter(v=>sv(id,v));
+  const a=Math.max(0,i-89);
+  let comp=0,tot=0; vars.forEach(v=>{ const arr=sv(id,v); for(let k=a;k<=i;k++){ tot++; if(arr[k]!=null) comp++; } });
+  let html=`<div class="dhead"><div class="r1"><div><div class="code">${esc(s.codigo)}</div><div class="where"><b>${esc(s.nombre)}</b><br>Estación ${esc(s.tipo.toLowerCase())}${s.distrito?" · "+esc(s.distrito):""}</div></div><button class="btn ghost iconbtn close" id="dClose" aria-label="Cerrar">${ICON.x}</button></div>
+    <div class="tags"><span class="pill ${st.off?"bad":"good"}">${st.off?(st.last<0?"Sin datos":"Sin datos desde "+fmtF(st.last)):"Transmitiendo"}</span><span class="pill">${tot?Math.round(comp/tot*100):0}% de datos en 90 días</span>${hy.simulado?'<span class="pill warn">Datos simulados</span>':""}</div></div><div class="dbody">`;
+  for(const v of vars){
+    const V=VARS[v]; const arr=sv(id,v); const vals=arr.slice(a,i+1);
+    let kp="";
+    if(v==="lluvia_mm"){ kp=`<div class="hy-kpis"><div><b>${fmtN(acum(arr,i,1)?.v,1)}</b> mm<span>último día</span></div><div><b>${fmtN(acum(arr,i,7)?.v,0)}</b> mm<span>7 días</span></div><div><b>${fmtN(acum(arr,i,30)?.v,0)}</b> mm<span>30 días</span></div></div>`; }
+    else { const lv=lastValid(arr,i); const ok=vals.filter(x=>x!=null); kp=`<div class="hy-kpis"><div><b>${fmtN(lv?.v,V.dec)}</b> ${V.unidad}<span>último dato${lv?" · "+fmtF(lv.i):""}</span></div><div><b>${fmtN(ok.length?Math.min(...ok):null,V.dec)}</b><span>mínimo 90 días</span></div><div><b>${fmtN(ok.length?Math.max(...ok):null,V.dec)}</b><span>máximo 90 días</span></div></div>`; }
+    const thr = v==="cota_msnm" && id===HYDRO.limni.yguazu ? hy.umbrales.map(u=>({y:u.cota,label:`${u.nombre} ${fmtN(u.cota,1)}`,cls:u.id})) : null;
+    html+=`<div class="grp"><h4>${esc(V.label)} (${esc(V.unidad)})</h4>${kp}${chartSVG({w:400,h:V.bar?100:120,n:vals.length,bar:!!V.bar,label:V.label,unidad:V.unidad,dec:V.dec,labels:dayLabels(a,i),series:[{name:"",vals,cls:"main"}],thr,xl:[fmtF(a),fmtF(i)],readDefault:"Pasá el cursor por el gráfico para ver cada día"})}</div>`;
+  }
+  if(!vars.length) html+=`<div class="grp"><p>Esta estación todavía no tiene datos cargados.</p></div>`;
+  html+=`<div class="grp"><h4>Ubicación</h4><dl class="kv"><dt>Coordenadas</dt><dd class="mono">${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</dd>${s.nota?`<dt>Nota</dt><dd>${esc(s.nota)}</dd>`:""}</dl></div></div>`;
+  return html;
+}
+
+/* ---------- carga de datos de estaciones ---------- */
+function toISO(v){
+  if(v instanceof Date) return v.toISOString().slice(0,10);
+  if(typeof v==="number" && v>20000 && v<80000) return new Date(Math.round((v-25569)*864e5)).toISOString().slice(0,10);
+  const s=String(v??"").trim(); let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m) return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
+  m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/); if(m) return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
+  return null;
+}
+function stationIdFrom(v){ const c=norm(v).replace(/_/g,""); const s=STATIONS.find(s=>norm(s.id).replace(/_/g,"")===c) || STATIONS.find(s=>norm(s.codigo).replace(/_/g,"")===c) || STATIONS.find(s=>c.startsWith(norm(s.codigo).replace(/_/g,""))); return s?s.id:null; }
+function ensureDate(iso){
+  let k=hy.fechas.indexOf(iso); if(k>=0) return k;
+  if(iso>hy.fechas[hy.fechas.length-1]){ let last=hy.fechas[hy.fechas.length-1]; while(last<iso){ last=addDays(last,1); hy.fechas.push(last); for(const key in hy.series) hy.series[key].push(null); } return hy.fechas.length-1; }
+  if(iso<hy.fechas[0]){ let first=hy.fechas[0]; const add=[]; while(first>iso){ first=addDays(first,-1); add.unshift(first); } hy.fechas=add.concat(hy.fechas); for(const key in hy.series) hy.series[key]=Array(add.length).fill(null).concat(hy.series[key]); return 0; }
+  return -1;
+}
+$("#hyFile").addEventListener("change", async e=>{
+  const file=e.target.files[0]; e.target.value=""; if(!file) return;
+  try{
+    if(typeof XLSX==="undefined") throw new Error("no se pudo cargar el lector de Excel");
+    const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:true});
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:true});
+    if(!rows.length) throw new Error("el archivo no tiene filas");
+    const cols=Object.keys(rows[0]); const nc=Object.fromEntries(cols.map(c=>[norm(c),c]));
+    const cF=nc.fecha||nc.date||nc.dia, cS=nc.estacion||nc.codigo||nc.station||nc.estacion_codigo;
+    if(!cF||!cS) throw new Error("faltan las columnas fecha y estación");
+    const cV=nc.variable, cVal=nc.valor||nc.value;
+    let n=0, skip=0; const sts=new Set();
+    const put=(id,v,iso,val)=>{ const x=parseNum(val); if(x===""||!id||!iso){ skip++; return; } const key=id+"|"+v; if(!hy.series[key]) hy.series[key]=Array(hy.fechas.length).fill(null); const k=ensureDate(iso); if(k<0){ skip++; return; } hy.series[key][k]=x; n++; sts.add(id); };
+    for(const r of rows){
+      const iso=toISO(r[cF]); const id=stationIdFrom(r[cS]);
+      if(cV&&cVal){ const v=VAR_ALIAS[norm(r[cV])]; if(!v){ skip++; continue; } put(id,v,iso,r[cVal]); }
+      else for(const c of cols){ const v=VAR_ALIAS[norm(c)]; if(v) put(id,v,iso,r[c]); }
+    }
+    if(!n) throw new Error("no se reconocieron valores (revisá los códigos de estación y los nombres de las variables)");
+    hy.cargas.push({archivo:file.name,n,at:nowISO()});
+    hy.idx=hy.fechas.length-1; hySave(); updateStationIcons(); if(hy.auto) applyAutoLevel(false); renderHydro();
+    toast(`Se cargaron ${n} valores de ${sts.size} estaciones${skip?` (${skip} filas sin reconocer)`:""}. Datos hasta ${fmtF(hy.fechas.length-1)}.`);
+  }catch(err){ toast("No se pudieron cargar los datos: "+(err.message||err)); }
+});
+async function downloadHyTemplate(){
+  if(typeof XLSX==="undefined"){ toast("El generador de Excel no se cargó."); return; }
+  const wb=XLSX.utils.book_new(); const last=hy.fechas[hy.fechas.length-1]; const next=addDays(last,1);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{fecha:next,estacion:"AY23",variable:"cota_msnm",valor:219.4},{fecha:next,estacion:"AY18",variable:"lluvia_mm",valor:12.5},{fecha:next,estacion:"AY11",variable:"caudal_m3s",valor:48.2}]), "datos");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(STATIONS.map(s=>({estacion:s.id,nombre:s.nombre,tipo:s.tipo,variables:Object.keys(VARS).filter(v=>sv(s.id,v)).join(", ")}))), "estaciones");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Object.entries(VARS).map(([k,v])=>({variable:k,descripcion:v.label,unidad:v.unidad}))), "variables");
+  const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+  if(await saveFile("plantilla_datos_estaciones.xlsx", new Blob([buf]))) toast("Plantilla descargada.");
+}
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+function bindUI(){
+  $("#btnImport").onclick=openImport;
+  $("#btnExport").onclick=openExport;
+  $("#btnHistory").onclick=openHistory;
+  $("#btnAbout").onclick=openAbout;
+  $("#btnNew").onclick=()=>{ closeDrawer(); setMode("placing"); if(window.innerWidth<=900) $("#side").classList.remove("open"); };
+  $("#btnSide").onclick=()=>$("#side").classList.toggle("open");
+  $("#q").addEventListener("input", debounce(e=>{ state.filters.q=e.target.value; state.listLimit=150; renderData(); },150));
+  $("#fEmb").onclick=e=>{ const b=e.target.closest("[data-emb]"); if(!b) return; state.filters.embalse=b.dataset.emb; renderFilters(); renderData(); };
+  $("#fIvh").onclick=e=>{ const b=e.target.closest("[data-ivh]"); if(!b) return; state.filters.ivh = state.filters.ivh===b.dataset.ivh?"":b.dataset.ivh; renderFilters(); renderData(); };
+  [["#fDist","distrito"],["#fTipo","tipo"],["#fEstado","estado"],["#fFranja","franja"]].forEach(([s,k])=>$(s).onchange=e=>{ state.filters[k]=e.target.value; renderData(); });
+  const clear=()=>{ state.filters={q:"",embalse:"",distrito:"",tipo:"",estado:"",franja:"",ivh:"",stat:"",origen:"",alerta:""}; $("#q").value=""; renderFilters(); renderData(); };
+  $("#clearF").onclick=clear;
+  $("#stats").onclick=e=>{ const b=e.target.closest("[data-stat]"); if(!b) return; const k=b.dataset.stat; state.filters.stat = state.filters.stat===k?"":k; renderData(); };
+  $("#list").onclick=e=>{ if(e.target.id==="clearF2") return clear(); if(e.target.id==="moreBtn"){ state.listLimit+=150; renderList(); return; } const it=e.target.closest(".item"); if(it) select(it.dataset.code); };
+  $("#legend").addEventListener("change",e=>{ if(e.target.id==="colorBy"){ state.colorBy=e.target.value; saveSoon(); renderData(); } });
+  $("#tabList").onclick=()=>setTab("list");
+  $("#tabSum").onclick=()=>setTab("sum");
+  $("#tabHy").onclick=()=>setTab("hy");
+  document.querySelectorAll("input[name=base]").forEach(r=>r.onchange=()=>setBase(r.value));
+  $("#lyDist").onchange=e=>e.target.checked?map.addLayer(overlay.dist):map.removeLayer(overlay.dist);
+  $("#lyWater").onchange=e=>e.target.checked?map.addLayer(overlay.water):map.removeLayer(overlay.water);
+  $("#lyRoads").onchange=e=>e.target.checked?map.addLayer(overlay.roads):map.removeLayer(overlay.roads);
+  $("#lyStations").onchange=e=>e.target.checked?map.addLayer(overlay.stations):map.removeLayer(overlay.stations);
+  $("#fOrig").onclick=e=>{ const b=e.target.closest("[data-orig]"); if(!b) return; state.filters.origen=b.dataset.orig; renderFilters(); renderData(); };
+  $("#lyLabels").onchange=()=>{ updateLabels(); if($("#lyLabels").checked) map.addLayer(overlay.dams); else map.removeLayer(overlay.dams); };
+  document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if($("#overlay")) return closeModal(); if(state.mode==="placing") return setMode("view"); if(state.moving) return cancelMove(); if(state.editing) return; if(state.selected) closeDrawer(); });
+  const onTheme=()=>{ readPalette(); restyleBase(); drawScen(); renderData(); renderDrawer(); };
+  try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",onTheme); }catch(e){}
+  new MutationObserver(onTheme).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+}
+
+/* ============================================================
+   INICIO
+   ============================================================ */
+function boot(){
+  if(typeof L==="undefined"){ document.getElementById("map").innerHTML='<div class="empty" style="padding:60px 20px">No se pudo cargar la biblioteca del mapa. Revisá la conexión a internet y recargá la página.</div>'; return; }
+  readPalette(); load(); loadScen(); hyLoad(); state.base="carto";
+  if(state.colorBy==="exposicion" && !scen.active) state.colorBy="ivh";
+  initMap(); buildStations(); bindUI(); renderRefs(); renderScenCard(); drawScen();
+  if(hy.auto) applyAutoLevel(false);
+  map.setView([-25.28,-55.12],10);
+  renderAll(); updateLabels(); fitAll();
+}
+boot();
+</script>
