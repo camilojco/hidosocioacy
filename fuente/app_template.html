@@ -14,7 +14,7 @@
   --accent:#0d5b63; --accent-ink:#ffffff; --accent-soft:#d9ebea;
   --land:#eef0e8; --water:#b4cfde; --water-line:#7ea6bd; --boundary:#aeb4a3; --dlabel:#6a7268; --road:#c9b9a0;
   --mark-ring:#fbfbf8;
-  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --cgray:#8f948c; --scen:#2a78d6; --water-lvl:#8db7d3; --station:#5a2d82;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --cgray:#8f948c; --scen:#2a78d6; --water-lvl:#8db7d3; --station:#5a2d82; --lecho:#e2cf9f;
   --o1:#e4864f; --o2:#c95a33; --o3:#a03a22; --o4:#661b12;
   --warn:#9a5b00; --warn-bg:#fdf1d8; --bad:#a83232; --bad-bg:#f9e2df; --good:#1d6b3a; --good-bg:#dff0e3;
   --shadow:0 1px 2px rgba(22,32,29,.06),0 8px 24px rgba(22,32,29,.10);
@@ -29,7 +29,7 @@
   --accent:#6cc4c9; --accent-ink:#082427; --accent-soft:#173539;
   --land:#1c2024; --water:#1f3a4d; --water-line:#3a6884; --boundary:#3c464a; --dlabel:#86908a; --road:#4a4436;
   --mark-ring:#101416;
-  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef; --lecho:#6f5c34;
   --o1:#b8442a; --o2:#d9653b; --o3:#ee9363; --o4:#f8c49c;
   --warn:#f0b54a; --warn-bg:#3a2c10; --bad:#ef8a80; --bad-bg:#3d1c1a; --good:#7dd39b; --good-bg:#16301f;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.45);
@@ -40,7 +40,7 @@
   --accent:#6cc4c9; --accent-ink:#082427; --accent-soft:#173539;
   --land:#1c2024; --water:#1f3a4d; --water-line:#3a6884; --boundary:#3c464a; --dlabel:#86908a; --road:#4a4436;
   --mark-ring:#101416;
-  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --cgray:#7c837e; --scen:#3987e5; --water-lvl:#2f6283; --station:#c9a6ef; --lecho:#6f5c34;
   --o1:#b8442a; --o2:#d9653b; --o3:#ee9363; --o4:#f8c49c;
   --warn:#f0b54a; --warn-bg:#3a2c10; --bad:#ef8a80; --bad-bg:#3d1c1a; --good:#7dd39b; --good-bg:#16301f;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.45);
@@ -184,6 +184,12 @@ tr.scen-row-active td{background:var(--accent-soft)}
 .dotact{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
 .scen-seg button.sim{text-decoration:underline dotted;text-underline-offset:3px}
 .scen-note{font-size:11.5px;color:var(--warn)}
+.scen-note.aviso{background:var(--warn-bg);color:var(--warn);padding:6px 8px;border-radius:6px;margin:4px 0}
+.scen-ref{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap}
+.lg-lecho{display:inline-flex;gap:5px;align-items:center}
+.lg-lecho i{display:inline-block;width:12px;height:10px;border-radius:2px;background:var(--lecho);outline:1px dashed var(--ink-3)}
+.refpick{display:flex;gap:5px;align-items:center;color:var(--ink);font-size:12px;margin-bottom:3px;cursor:pointer}
+.refpick input{accent-color:var(--accent);margin:0}
 .simtag{font-size:10.5px;color:var(--warn);font-weight:600}
 .scen-ficha-g+.scen-ficha-g{margin-top:12px}
 .summary .linkbtn{white-space:nowrap}
@@ -557,7 +563,7 @@ const OPT = {
   sino:["Sí","No"],
   preoc:["1","2","3","4","5"],
   afect:["Pozo somero","Pesca","Acceso del ganado al agua","Cruce en balsa","Turismo","Riego","Toma de agua","Ninguna"],
-  estado:["Relevada","Validada","Requiere revisita","Actualizada en gabinete","Visitada por el equipo"]
+  estado:["Relevada","Requiere revisita","Actualizada en gabinete","Visitada por el equipo"]
 };
 const F = (key,label,group,type,extra={}) => Object.assign({key,label,group,type},extra);
 const SCHEMA = [
@@ -590,7 +596,7 @@ const SCHEMA = [
   F("preocupacion_descenso","Nivel de preocupación (1 a 5)","percepcion","scale",{options:OPT.preoc,aliases:["preocupacion","nivel_preocupacion"]}),
   F("afectaciones_previstas","Afectaciones previstas","percepcion","multi",{options:OPT.afect,aliases:["afectaciones","afectacion_prevista","impactos_previstos"]}),
   F("reclamo_previo","Presentó reclamos anteriores","percepcion","select",{options:OPT.sino,aliases:["reclamo","reclamos","queja_previa"]}),
-  F("estado_ficha","Estado de la ficha","seguimiento","select",{options:OPT.estado,aliases:["estado","estado_registro"]}),
+  F("estado_ficha","Etapa de la ficha","seguimiento","select",{options:OPT.estado,aliases:["estado","estado_registro"]}),
   F("observaciones","Observaciones","seguimiento","textarea",{aliases:["obs","comentarios","notas","observacion"]})
 ];
 const BYKEY = Object.fromEntries(SCHEMA.map(f=>[f.key,f]));
@@ -670,7 +676,7 @@ function utmToLatLon(E,N,zone=21){
 const IVH_W = {
   dependencia_embalse:{label:"Dependencia económica del embalse",max:30,map:{"Alta":30,"Media":18,"Baja":6,"Ninguna":0}},
   fuente_agua_consumo:{label:"Fuente de agua para consumo",max:20,map:{"Toma directa del embalse":20,"Pozo somero propio":15,"Aljibe o agua de lluvia":10,"Compra de agua":8,"Pozo profundo comunitario":4,"Pozo profundo particular":4,"Aguatería comunitaria":2,"Junta de Saneamiento":0}},
-  tenencia:{label:"Seguridad de la tenencia",max:15,map:{"Ocupación sin documento":15,"Propiedad comunitaria indígena":12,"Préstamo o cuidado":10,"Derecho de ocupación (INDERT)":8,"Arrendamiento":8,"Por verificar":8,"Título de propiedad":0}},
+  tenencia:{label:"Seguridad de la tenencia",max:15,map:{"Ocupación sin documento":15,"Propiedad comunitaria indígena":0,"Préstamo o cuidado":10,"Derecho de ocupación (INDERT)":8,"Arrendamiento":8,"Por verificar":8,"Título de propiedad":0}},
   franja_dominio:{label:"Relación con la franja de dominio",max:15,map:{"Dentro":15,"Colindante":8,"Por verificar":6,"Fuera":0}}
 };
 function ivh(r){
@@ -689,11 +695,13 @@ function ivh(r){
   const tieneN=!isEmpty(r.integrantes)&&!isEmpty(r.menores_14)&&!isEmpty(r.mayores_65)&&Number(r.integrantes)>0;
   const n=Number(r.integrantes), dependientes=Number(r.menores_14)+Number(r.mayores_65);
   agregar("Menores de 14 y mayores de 65 en el hogar",esHogar?(tieneN?`${dependientes} de ${n}`:"Sin dato"):"No aplica",esHogar?(tieneN?Math.round(Math.min(1,dependientes/n)*10):null):0,10);
-  agregar("Jefatura femenina",esHogar?(r.sexo_jefatura||"Sin dato"):"No aplica",esHogar?(r.sexo_jefatura==="Mujer"?5:r.sexo_jefatura==="Hombre"?0:null):0,5);
   agregar("No conoce el descenso programado",r.conoce_descenso, r.conoce_descenso==="No"?5:r.conoce_descenso==="Sí"?0:null,5);
   // Una ausencia de respuesta NO equivale a puntuación 0. Solo se clasifica con todos los componentes disponibles.
-  return faltantes.length ? {score:null,nivel:"Sin dato",parts, faltantes,completitud:Math.round((maxConocido/100)*100)} :
-    {score:s,nivel:s>=55?"Alta":s>=35?"Media":"Baja",parts,faltantes:[],completitud:100};
+  // La jefatura femenina y la condición indígena NO suman puntos: se usan para desagregar resultados.
+  const maxTotal=parts.reduce((t,p)=>t+p.max,0)||100;
+  if(faltantes.length) return {score:null,nivel:"Sin dato",parts,faltantes,completitud:Math.round(maxConocido/maxTotal*100)};
+  const score=Math.round(s/maxTotal*100);
+  return {score,nivel:score>=55?"Alta":score>=35?"Media":"Baja",parts,faltantes:[],completitud:100,bruto:s,maxTotal};
 }
 
 /* ============================================================
@@ -706,7 +714,7 @@ const state = {
   editing:null, draft:null, moving:null, refLayers:[]
 };
 function blank(){ const r={}; for(const f of SCHEMA) r[f.key]=""; r._extra={}; return r; }
-function fromSample(o){ const r=blank(); for(const k in o) if(k in BYKEY) r[k]=o[k]; r._creado=nowISO(); r._origen="Entrega 1 (ejemplo)"; r._clase="demostrativo"; r._verificacion="No verificable: ficticio"; return r; }
+function fromSample(o){ const r=blank(); for(const k in o) if(k in BYKEY) r[k]=o[k]; r._creado=nowISO(); r._origen="Entrega 1 (ejemplo)"; r._clase="demostrativo"; r._verificacion="No verificable: ficticio"; return migrarValidada(r); }
 const CLASES = {demostrativo:"Ficticio · demostración",referencia:"Sitio o encuesta anterior",importado:"Archivo importado",nuevo:"Alta manual"};
 function clasificar(r){
   if(r._clase && CLASES[r._clase]) return r._clase;
@@ -714,7 +722,12 @@ function clasificar(r){
   if(/^SI-|^EN-/.test(String(r.codigo||""))) return "referencia";
   return "importado";
 }
-function asegurarClase(r){ r._clase=clasificar(r); if(!r._verificacion) r._verificacion=r._clase==="demostrativo"?"No verificable: ficticio":r._clase==="referencia"?"Procedencia histórica; verificar vigencia":"Pendiente de validación"; return r; }
+const VAL_ENC="Validada por la encuestadora (sin evidencia registrada)";
+// "Validada" ya no es una etapa: la validación vive solo en _verificacion.
+function migrarValidada(r){ if(r.estado_ficha==="Validada"){ r.estado_ficha="Relevada"; if(clasificar(r)!=="demostrativo" && (!r._verificacion || /^Pendiente/.test(r._verificacion))) r._verificacion=VAL_ENC; } return r; }
+function grupoVerif(r){ const v=String(r._verificacion||""); if(clasificar(r)==="demostrativo") return "Ficticia (no verificable)"; if(v.startsWith("Verificado")) return "Verificada con evidencia"; if(v.startsWith("Validada por la encuestadora")) return "Validada por la encuestadora"; if(v.startsWith("Requiere")) return "Requiere nueva visita"; if(v.startsWith("Procedencia histórica")) return "Antecedente por verificar"; return "Pendiente de validación"; }
+function verifPill(r){ const g=grupoVerif(r); const cls=g.startsWith("Verificada")?"good":g.startsWith("Requiere")?"warn":g.startsWith("Ficticia")?"warn":""; return `<span class="pill ${cls}">${esc(g)}</span>`; }
+function asegurarClase(r){ migrarValidada(r); r._clase=clasificar(r); if(!r._verificacion) r._verificacion=r._clase==="demostrativo"?"No verificable: ficticio":r._clase==="referencia"?"Procedencia histórica; verificar vigencia":"Pendiente de validación"; return r; }
 const conteoClases = () => state.records.reduce((a,r)=>(a[clasificar(r)]=(a[clasificar(r)]||0)+1,a),{});
 
 function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify({records:state.records,history:state.history,editor:state.editor,source:state.source,colorBy:state.colorBy})); }catch(e){ if(!save.warned){ save.warned=true; toast("No se pudo guardar en este navegador. Exportá el archivo para no perder cambios."); } } }
@@ -748,17 +761,18 @@ const byCode = () => new Map(state.records.map(r=>[String(r.codigo).trim().toUpp
 const TIPO_G = t => t==="Hogar"||t==="Hogar con unidad productiva" ? "Hogares" : t==="Unidad productiva" ? "Unidades productivas" : isEmpty(t) ? "Sin dato" : "Uso colectivo";
 const FUENTE_G = f => ["Junta de Saneamiento","Pozo profundo comunitario","Pozo profundo particular","Aguatería comunitaria"].includes(f) ? "Red o pozo profundo" : ["Pozo somero propio","Aljibe o agua de lluvia"].includes(f) ? "Pozo somero o aljibe" : ["Toma directa del embalse","Compra de agua"].includes(f) ? "Embalse o compra" : "Sin dato";
 const COLOR_BY = {
-  exposicion:{get label(){ const a=activeScen(); return a?`Exposición a ${scenName(a)}`:"Exposición al escenario"; }, get:r=>{ const a=activeScen(); return a?expoStatus(a,r):"Sin dato"; }, get classes(){ return [["Dentro del área","--o4"],["En agua","--c1"],["Lecho descubierto","--o4"],["Agua alejada","--o3"],[`A menos de ${scen.margin} m`,"--o2"],["Fuera","--cgray"],["Sin ubicación","--cgray"]]; }, note:"En niveles de embalse se distingue el lecho descubierto y el alejamiento de la costa frente a la cota de referencia. Es evaluación preliminar, no afectación confirmada."},
+  exposicion:{get label(){ const a=activeScen(); return a?`Exposición a ${scenName(a)}`:"Exposición al escenario"; }, get:r=>{ const a=activeScen(); return a?expoStatus(a,r):"Sin dato"; }, get classes(){ const a=activeScen(); if(a && GRUPOS[scenGroup(a)].base) return [["En agua","--c1"],["Lecho descubierto","--o4"],["Agua alejada más de 500 m","--o3"],["Agua alejada 200–500 m","--o2"],["Agua alejada hasta 200 m","--o1"],[`A menos de ${scen.margin} m`,"--c3"],["Fuera","--cgray"],["Sin ubicación","--cgray"]]; return [["Dentro del área","--o4"],[`A menos de ${scen.margin} m`,"--o2"],["Fuera","--cgray"],["Sin ubicación","--cgray"]]; }, note:"En niveles de embalse se distingue el lecho descubierto y el alejamiento de la costa frente a la cota de referencia. Es evaluación preliminar, no afectación confirmada."},
   ivh:{label:"Vulnerabilidad hidrosocial (IVH)", get:r=>ivh(r).nivel, classes:[["Alta","--o4"],["Media","--o3"],["Baja","--o1"],["Sin dato","--cgray"]], note:"Índice ilustrativo de 0 a 100: alta desde 55, media desde 35. El detalle está en cada ficha."},
   embalse:{label:"Embalse", get:r=>r.embalse||"Sin dato", classes:[["Yguazú","--c1"],["Acaray","--c2"],["Sin dato","--cgray"]]},
   franja:{label:"Franja de dominio", get:r=>r.franja_dominio||"Sin dato", classes:[["Dentro","--o4"],["Colindante","--o2"],["Fuera","--o1"],["Por verificar","--cgray"],["Sin dato","--cgray"]]},
   dependencia:{label:"Dependencia del embalse", get:r=>r.dependencia_embalse||"Sin dato", classes:[["Alta","--o4"],["Media","--o3"],["Baja","--o2"],["Ninguna","--o1"],["Sin dato","--cgray"]]},
   fuente:{label:"Fuente de agua para consumo", get:r=>FUENTE_G(r.fuente_agua_consumo), classes:[["Embalse o compra","--c2"],["Pozo somero o aljibe","--c1"],["Red o pozo profundo","--c3"],["Sin dato","--cgray"]]},
   tipo:{label:"Tipo de unidad", get:r=>TIPO_G(r.tipo_unidad), classes:[["Hogares","--c1"],["Unidades productivas","--c2"],["Uso colectivo","--c3"],["Sin dato","--cgray"]], note:"Uso colectivo agrupa comunidades indígenas, balnearios, instituciones y embarcaderos."},
-  estado:{label:"Estado de la ficha", get:r=>r.estado_ficha||"Sin dato", classes:[["Relevada","--c1"],["Validada","--c3"],["Requiere revisita","--c2"],["Actualizada en gabinete","--cgray"],["Visitada por el equipo","--o3"],["Sin dato","--cgray"]]}
+  verificacion:{label:"Validación de la ficha", get:r=>grupoVerif(r), classes:[["Verificada con evidencia","--c3"],["Validada por la encuestadora","--c1"],["Requiere nueva visita","--c2"],["Antecedente por verificar","--o3"],["Pendiente de validación","--cgray"],["Ficticia (no verificable)","--o1"]], note:"Una sola validación por ficha: la verificación documental o de campo, con responsable y evidencia."},
+  estado:{label:"Etapa de la ficha", get:r=>r.estado_ficha||"Sin dato", classes:[["Relevada","--c1"],["Requiere revisita","--c2"],["Actualizada en gabinete","--cgray"],["Visitada por el equipo","--o3"],["Sin dato","--cgray"]]}
 };
 let PALETTE = {};
-function readPalette(){ PALETTE={}; for(const v of ["--o1","--o2","--o3","--o4","--c1","--c2","--c3","--cgray","--mark-ring","--accent","--water","--water-line","--boundary","--land","--road","--ink","--scen","--water-lvl"]) PALETTE[v]=cssVar(v); }
+function readPalette(){ PALETTE={}; for(const v of ["--o1","--o2","--o3","--o4","--c1","--c2","--c3","--cgray","--mark-ring","--accent","--water","--water-line","--boundary","--land","--road","--ink","--scen","--water-lvl","--lecho"]) PALETTE[v]=cssVar(v); }
 function colorOf(r){ const cb=COLOR_BY[state.colorBy]; const v=cb.get(r); const c=cb.classes.find(x=>x[0]===v); return PALETTE[c?c[1]:"--cgray"]; }
 
 /* ============================================================
@@ -915,11 +929,11 @@ function renderList(){
   const lim = rows.slice(0,state.listLimit);
   $("#list").innerHTML = lim.map(r=>{
     const v=ivh(r); const al=alertsOf(r);
-    const est = r.estado_ficha==="Requiere revisita"?'<span class="pill warn">Revisita</span>':r.estado_ficha==="Validada"?'<span class="pill good">Validada</span>':r.estado_ficha==="Actualizada en gabinete"?'<span class="pill acc">Actualizada</span>':'';
+    const est = r.estado_ficha==="Requiere revisita"?'<span class="pill warn">Revisita</span>':String(r._verificacion||"").startsWith("Verificado")?'<span class="pill good">Verificada</span>':r.estado_ficha==="Actualizada en gabinete"?'<span class="pill acc">Actualizada</span>':'';
     return `<button class="item" data-code="${esc(r.codigo)}" aria-current="${state.selected===r.codigo}">
       <span class="sw" style="background:${colorOf(r)}"></span>
       <span class="t1">${esc(r.codigo)}${clasificar(r)==="demostrativo"?' <span class="simtag">FICTICIO</span>':""}</span>
-      <span class="meta">${al.length?'<span class="pill bad">Ubicación</span> ':''}${A?(()=>{ const st=expoStatus(A,r);return st==="Lecho descubierto"||st==="Agua alejada"?`<span class="pill warn">${esc(st)}</span> `:st==="En agua"?'<span class="pill acc">En agua</span> ':st==="Dentro del área"?'<span class="pill bad">Dentro</span> ':st.startsWith("A menos")?`<span class="pill warn">&lt; ${scen.margin} m</span> `:""; })():""}${est}${v.score!==null?` <span class="mono">${v.score}</span>`:''}</span>
+      <span class="meta">${al.length?'<span class="pill bad">Ubicación</span> ':''}${A?(()=>{ const st=expoStatus(A,r);return st==="Lecho descubierto"||st.startsWith("Agua alejada")?`<span class="pill warn">${esc(st)}</span> `:st==="En agua"?'<span class="pill acc">En agua</span> ':st==="Dentro del área"?'<span class="pill bad">Dentro</span> ':st.startsWith("A menos")?`<span class="pill warn">&lt; ${scen.margin} m</span> `:""; })():""}${est}${v.score!==null?` <span class="mono">${v.score}</span>`:''}</span>
       <span class="t2">${r.nombre_sitio?`<b>${esc(r.nombre_sitio)}</b> · `:""}${esc(r.tipo_unidad||"Sin tipo")}${r.localidad?" · "+esc(r.localidad):""}${r.distrito?", "+esc(r.distrito):""}</span>
     </button>`;
   }).join("") + (rows.length>state.listLimit?`<div class="more"><button class="btn small" id="moreBtn">Mostrar ${Math.min(150,rows.length-state.listLimit)} más de ${rows.length-state.listLimit}</button></div>`:"");
@@ -942,7 +956,7 @@ function renderSummary(){
   const af={}; rows.forEach(r=>splitMulti(r.afectaciones_previstas).filter(a=>a!=="Ninguna").forEach(u=>af[u]=(af[u]||0)+1));
   const bars=(o)=>{ const e=Object.entries(o).sort((a,b)=>b[1]-a[1]); const mx=Math.max(1,...e.map(x=>x[1])); return `<div class="bars">${e.map(([k,v])=>`<div class="bar" title="${esc(k)}: ${v} fichas (${Math.round(v/rows.length*100)}%)"><span class="k">${esc(k)}</span><span class="track"><span class="fill" style="display:block;width:${(v/mx*100).toFixed(1)}%"></span></span><span class="v">${v}</span></div>`).join("")}</div>`; };
   const conoce=rows.filter(r=>r.conoce_descenso==="Sí").length, prc=rows.filter(r=>+r.preocupacion_descenso>=4).length;
-  $("#paneSum").innerHTML = scenSummaryHtml(rows) + `
+  $("#paneSum").innerHTML = scenSummaryHtml(rows) + desagregadoHtml(rows) + `
     <div><h3>Fichas por distrito</h3>
       <div style="overflow-x:auto"><table class="t"><thead><tr><th>Distrito</th><th class="num">Fichas</th><th class="num">IVH alto</th><th class="num">En franja</th><th class="num">Pozo somero</th></tr></thead>
       <tbody>${dist.map(([k,o])=>`<tr><td>${esc(k)}<div style="font-size:11px;color:var(--ink-3)">${[...o.emb].join(", ")}</div></td><td class="num">${o.n}</td><td class="num">${o.alta}</td><td class="num">${o.dentro}</td><td class="num">${o.somero}</td></tr>`).join("")}</tbody></table></div>
@@ -951,6 +965,13 @@ function renderSummary(){
     <div><h3>Afectaciones previstas por el descenso</h3>${bars(af)}
       <p class="note">${conoce} de ${rows.length} fichas (${rows.length?Math.round(conoce/rows.length*100):0}%) conocen el descenso programado; ${prc} declaran preocupación alta (4 o 5).</p></div>`;
   $("#paneSum").querySelectorAll("[data-sumscen]").forEach(b=>b.onclick=()=>setScen(b.dataset.sumscen));
+}
+function desagregadoHtml(rows){
+  const hog=rows.filter(r=>/^Hogar/.test(String(r.tipo_unidad||"")));
+  if(!hog.length) return "";
+  const grupos=[["Jefatura femenina",r=>r.sexo_jefatura==="Mujer"],["Jefatura masculina",r=>r.sexo_jefatura==="Hombre"],["Jefatura sin dato",r=>!r.sexo_jefatura],["Comunidades indígenas",r=>r.tipo_unidad==="Comunidad indígena"||r.tenencia==="Propiedad comunitaria indígena"]];
+  const fila=([n,f])=>{ const g=rows.filter(f); if(!g.length) return ""; const c={Alta:0,Media:0,Baja:0,"Sin dato":0}; g.forEach(r=>c[ivh(r).nivel]++); return `<tr><td>${esc(n)}</td><td class="num">${g.length}</td><td class="num">${c.Alta}</td><td class="num">${c.Media}</td><td class="num">${c.Baja}</td><td class="num">${c["Sin dato"]}</td></tr>`; };
+  return `<div><h3>Vulnerabilidad desagregada</h3><div style="overflow-x:auto"><table class="t"><thead><tr><th>Grupo</th><th class="num">Fichas</th><th class="num">Alta</th><th class="num">Media</th><th class="num">Baja</th><th class="num">Sin dato</th></tr></thead><tbody>${grupos.map(fila).join("")}</tbody></table></div><p class="note">Estos grupos no suman puntos al índice: se muestran aparte para ver si la vulnerabilidad se concentra en ellos.</p></div>`;
 }
 function renderSource(){
   const s=state.source, c=conteoClases(), v=state.records.filter(r=>String(r._verificacion||"").startsWith("Verificado")).length;
@@ -996,14 +1017,14 @@ function renderDrawer(){
   d.classList.add("open");
   const v=ivh(r); const al=alertsOf(r);
   const lvlPill = v.nivel==="Alta"?"bad":v.nivel==="Media"?"warn":"";
-  const estPill = r.estado_ficha==="Requiere revisita"?"warn":r.estado_ficha==="Validada"?"good":"";
+  const estPill = r.estado_ficha==="Requiere revisita"?"warn":"";
   const h = state.history.filter(x=>x.codigo===r.codigo);
   const tab = state.dtab||"ficha";
   d.innerHTML = `
     <div class="dhead">
       <div class="r1"><div><div class="code">${esc(r.codigo)}</div><div class="where">${r.nombre_sitio?`<b>${esc(r.nombre_sitio)}</b><br>`:""}${esc(r.localidad||(r.nombre_sitio?"":"Sin localidad"))}${r.distrito?(r.localidad?" · ":"")+esc(r.distrito):""}${r.embalse?" · Embalse "+esc(r.embalse):""}</div></div>
         <button class="btn ghost iconbtn close" id="dClose" aria-label="Cerrar ficha">${ICON.x}</button></div>
-      <div class="tags"><span class="pill">${esc(r.tipo_unidad||"Sin tipo")}</span>${r.estado_ficha?`<span class="pill ${estPill}">${esc(r.estado_ficha)}</span>`:""}<span class="pill ${lvlPill}">IVH ${v.score!==null?v.score+" · "+v.nivel:"sin dato"}</span>${al.map(a=>`<span class="pill bad">${esc(a)}</span>`).join("")}</div>
+      <div class="tags"><span class="pill">${esc(r.tipo_unidad||"Sin tipo")}</span>${r.estado_ficha?`<span class="pill ${estPill}">${esc(r.estado_ficha)}</span>`:""}${verifPill(r)}<span class="pill ${lvlPill}">IVH ${v.score!==null?v.score+" · "+v.nivel:"sin dato"}</span>${al.map(a=>`<span class="pill bad">${esc(a)}</span>`).join("")}</div>
       <div class="acts">
         <button class="btn small" id="dEdit">${ICON.edit}Editar</button>
         ${clasificar(r)==="demostrativo"?'<span class="pill warn">Ficticio · no verificable</span>':`<button class="btn small" id="dVerify">${ICON.target}Verificar fuente</button>`}
@@ -1041,6 +1062,7 @@ function openVerify(code){
     const who=$("#verifyWho").value.trim(),evidence=$("#verifyEvidence").value.trim(),status=$("#verifyEstado").value;
     if(!who){toast("Indicá quién realizó la verificación.");return;}
     if(status.startsWith("Verificado")&&!evidence){toast("Para verificar una ficha, indicá una evidencia comprobable.");return;}
+    if(status==="Requiere nueva visita" && r.estado_ficha!=="Requiere revisita"){ state.history.push({at:nowISO(),codigo:r.codigo,campo:BYKEY.estado_ficha.label,campoKey:"estado_ficha",antes:r.estado_ficha||"",despues:"Requiere revisita",editor:who,origen:"Revisión documental/territorial"}); r.estado_ficha="Requiere revisita"; }
     const before=r._verificacion||"";r._verificacion=status;r._verificador=who;r._fuenteVerificacion=evidence;r._fechaVerificacion=nowISO();r._actualizado=nowISO();state.editor=who;
     state.history.push({at:nowISO(),codigo:r.codigo,campo:"Verificación de datos",campoKey:"",antes:before,despues:status+". Evidencia: "+evidence,editor:who,origen:"Revisión documental/territorial"});
     save();closeModal();renderData();renderDrawer();toast("Revisión registrada con trazabilidad.");
@@ -1062,7 +1084,7 @@ function ivhHtml(r,v){
   return `<div class="grp"><div class="ivhbox"><div class="ivhnum">${v.score}<small> / 100</small></div>
       <div class="gauge"><div class="g"><i style="left:${v.score}%"></i></div><div class="ticks"><span style="left:0">0</span><span style="left:35%">35</span><span style="left:55%">55</span><span style="left:100%">100</span></div></div></div>
     <table class="parts">${v.parts.map(p=>`<tr><td>${esc(p.label)}</td><td class="v">${esc(p.value)}</td><td>${p.pts} / ${p.max}</td></tr>`).join("")}</table>
-    <div class="callout">Índice ilustrativo para el prototipo. Los factores y pesos se calibran con el equipo social antes de usarlo en decisiones.</div></div>`;
+    <div class="callout">Índice ilustrativo para el prototipo. Los factores y pesos se calibran con el equipo social antes de usarlo en decisiones. ${v.maxTotal?`Puntaje bruto ${v.bruto} de ${v.maxTotal}, llevado a escala 0–100. `:""}La jefatura femenina y la condición indígena no suman puntos: se usan para desagregar resultados (ver Resumen); las comunidades indígenas requieren evaluación y consulta específicas.</div></div>`;
 }
 function histHtml(h){
   if(!h.length) return `<div class="grp"><p style="color:var(--ink-3)">Esta ficha no tiene cambios registrados desde que se cargó.</p></div>`;
@@ -1305,6 +1327,7 @@ function buildImport(){
     }
     if(utm && r.latitud!=="" && r.longitud!==""){ const [la,lo]=utmToLatLon(+r.longitud,+r.latitud,21); r.latitud=+la.toFixed(6); r.longitud=+lo.toFixed(6); }
     if(hasCoords(r) && !inArea(+r.latitud,+r.longitud) && inArea(+r.longitud,+r.latitud) && IMP.fixSwap){ const t=r.latitud; r.latitud=r.longitud; r.longitud=t; swapped++; r.__swapped=true; }
+    if(r.estado_ficha==="Validada"){ r.estado_ficha="Relevada"; r.__valEnc=true; }
     r.codigo=String(r.codigo??"").trim();
     if(!r.codigo){ nocode++; r.__autocode=true; }
     if(hasCoords(r)){ if(isEmpty(r.distrito)||isEmpty(r.departamento)){ const d=districtAt(+r.latitud,+r.longitud); if(d){ if(isEmpty(r.distrito)) r.distrito=d.distrito; if(isEmpty(r.departamento)) r.departamento=d.departamento; } }
@@ -1378,14 +1401,14 @@ function doImport(){
   }
   const ex=byCode(); let nN=0,nU=0;
   for(const r of b.out){
-    delete r.__swapped;
+    delete r.__swapped; const verifImp=r.__valEnc?VAL_ENC:"Pendiente de validación"; delete r.__valEnc;
     if(r.__autocode){ delete r.__autocode; r.codigo=nextCode(r.embalse); }
     const cur=ex.get(r.codigo.toUpperCase());
     if(cur){
       if(clasificar(cur)==="demostrativo"){
         // Reemplazar la ficha ficticia completa: jamás conservar campos demostrativos como si fueran relevados.
         const pos=state.records.indexOf(cur);
-        r._creado=at;r._actualizado=at;r._origen=origen;r._clase="importado";r._verificacion="Pendiente de validación";
+        r._creado=at;r._actualizado=at;r._origen=origen;r._clase="importado";r._verificacion=verifImp;
         state.records[pos]=r;ex.set(r.codigo.toUpperCase(),r);nU++;
         state.history.push({at,codigo:r.codigo,campo:"Sustitución completa de ficha ficticia",campoKey:"",antes:"Demostración",despues:"Nueva ficha importada, por validar",editor:ed,origen});
         continue;
@@ -1393,9 +1416,9 @@ function doImport(){
       let ch=0;
       for(const f of SCHEMA){ if(r[f.key]===""||String(cur[f.key]??"")===String(r[f.key])) continue; state.history.push({at,codigo:cur.codigo,campo:f.label,campoKey:f.key,antes:String(cur[f.key]??""),despues:String(r[f.key]),editor:ed,origen}); cur[f.key]=r[f.key]; ch++; }
       for(const [k,v] of Object.entries(r._extra)){ if(String(cur._extra?.[k]??"")!==String(v)){ cur._extra=cur._extra||{}; cur._extra[k]=v; ch++; } }
-      if(ch){ cur._actualizado=at; cur._origen=origen; cur._clase="importado"; cur._verificacion="Pendiente de validación"; nU++; }
+      if(ch){ cur._actualizado=at; cur._origen=origen; cur._clase="importado"; cur._verificacion=verifImp; nU++; }
     } else {
-      r._creado=at; r._origen=origen; r._clase="importado"; r._verificacion="Pendiente de validación"; state.records.push(r); ex.set(r.codigo.toUpperCase(), r); nN++;
+      r._creado=at; r._origen=origen; r._clase="importado"; r._verificacion=verifImp; state.records.push(r); ex.set(r.codigo.toUpperCase(), r); nN++;
       if(IMP.mode==="merge") state.history.push({at,codigo:r.codigo,campo:"Ficha creada",campoKey:"",antes:"",despues:"Nueva en la entrega",editor:ed,origen});
     }
   }
@@ -1449,7 +1472,9 @@ function exportAggregated(rows){
     if(r.estado_ficha==="Requiere revisita")g.requiere_revisita++;
     if(r.fuente_agua_consumo==="Pozo somero propio")g.fuente_pozo_somero++;
   }
-  return [...groups.values()].filter(g=>g.registros>=5).map(g=>({...g,nota:"Conteos agregados; categorías con menos de cinco fichas suprimidas; validar origen y representatividad"}));
+  // Se suprimen los subconteos de 1 a 4 casos y los que dejan 1 a 4 casos fuera (se deducirían por diferencia).
+  const sup=(v,n)=>(v>0&&v<5)||(n-v>0&&n-v<5)?"suprimido":v;
+  return [...groups.values()].filter(g=>g.registros>=5).map(g=>({embalse:g.embalse,distrito:g.distrito,registros:g.registros,ivh_alto:sup(g.ivh_alto,g.registros),ivh_sin_datos:sup(g.ivh_sin_datos,g.registros),requiere_revisita:sup(g.requiere_revisita,g.registros),fuente_pozo_somero:sup(g.fuente_pozo_somero,g.registros),nota:"Conteos agregados; se omiten grupos de menos de 5 fichas y subconteos que identificarían menos de 5 casos; validar origen y representatividad"}));
 }
 function exportRows(rows, anon){
   if(anon) return exportAggregated(rows);
@@ -1486,13 +1511,14 @@ function openExport(){
         <div class="flabel" style="margin-top:6px">Datos personales</div>
         <label><input type="checkbox" id="xanon"><span><b>Crear resumen agregado para compartir</b><small>Excluye fichas ficticias; agrupa por embalse y distrito (mínimo 5 registros). No incluye identificadores, coordenadas, observaciones, extras ni historial. No garantiza anonimato estadístico absoluto.</small></span></label>
         <p class="note">Sin esta opción se exportan todas las fichas, con datos personales y ubicaciones exactas. Tratamiento interno exclusivamente.</p>
+        <label><input type="checkbox" id="xint"><span>Confirmo que la exportación de fichas individuales es para uso interno<small>Obligatorio si no se elige el resumen agregado.</small></span></label>
       </div>
     </div>
     <div class="mfoot"><button class="btn" data-close>Cancelar</button><button class="btn primary" id="xGo">Exportar</button></div>`, "narrow");
   $("#xGo").onclick=async()=>{
     const fmt=document.querySelector("input[name=xfmt]:checked").value, scope=document.querySelector("input[name=xscope]:checked").value, anon=$("#xanon").checked;
     if(anon && fmt==="geojson"){ toast("La exportación agregada no contiene geometrías: elegí CSV o Excel."); return; }
-    if(!anon && !confirm("La exportación incluirá datos identificables, coordenadas y observaciones. ¿Confirmás su uso interno y la descarga?")) return;
+    if(!anon && !$("#xint").checked){ toast("Para exportar fichas individuales, confirmá que son para uso interno."); $("#xint").focus(); return; }
     const rows=exportRows(scope==="vis"?visible():state.records, anon);
     if(anon && !rows.length){ toast("No hay grupos con al menos cinco fichas no ficticias para exportar."); return; }
     const stamp=new Date().toISOString().slice(0,10); const base=`censo_hidrosocial_${stamp}${anon?"_agregado_sin_identificadores":"_interno_confidencial"}`;
@@ -1588,7 +1614,7 @@ const GRUPOS = {
   yguazu:{label:"Embalse Yguazú", largo:"Nivel del embalse Yguazú", unidad:"msnm", base:"lake"},
   acaray:{label:"Embalse Acaray", largo:"Nivel del embalse Acaray", unidad:"msnm", base:"cauce"}
 };
-const scen = { list:[], active:null, tab:"crecida", margin:50, showAll:false, removed:[], names:{}, values:{}, groups:{}, meta:{} };
+const scen = { list:[], active:null, tab:"crecida", margin:50, showAll:false, removed:[], names:{}, values:{}, groups:{}, meta:{}, refs:{} };
 let scenLayer=null;
 function prepScenario(s){
   const polys=[]; const g=s.geom;
@@ -1610,8 +1636,13 @@ function scenMeta(s){
   return {fuente:src, fecha:"",version:"Sin versión acreditada",estado:s.simulado?"Ilustrativo":s.referencia?"Referencia aproximada":"Por validar",hash:s.hash||"",...scen.meta[s.id]};
 }
 function referenciaNivel(grp){
+  const elegida=scen.refs&&scen.refs[grp]&&scenById(scen.refs[grp]);
+  if(elegida && !scen.removed.includes(elegida.id) && scenGroup(elegida)===grp) return elegida;
   return scenList(grp).find(s=>s.referencia)||scenList(grp).filter(s=>Number.isFinite(scenValue(s))).reduce((b,s)=>!b||scenValue(s)>scenValue(b)?s:b,null);
 }
+// El contorno embebido del Yguazú es aproximado (Natural Earth): sus resultados de costa son orientativos.
+function contornoAprox(grp){ const ref=referenciaNivel(grp); return grp==="yguazu" && !!ref && !!ref.embebido && !!ref.referencia; }
+const AVISO_CONTORNO="El contorno de referencia del Yguazú es aproximado: los puntos «en agua» y sobre «lecho descubierto» pueden ser errores del contorno y no del nivel. Cargá la superficie real del embalse y marcala como referencia en Administrar.";
 function distanciaAgua(s,r){ const e=expo(s,r); return e?(e.in?0:e.d):null; }
 function evolucionCosta(s,r){
   if(!s || scenGroup(s)==="crecida") return null;
@@ -1647,7 +1678,7 @@ function expoStatus(s, r){
   const c=evolucionCosta(s,r);
   if(e.in)return "En agua";
   if(c?.lecho)return "Lecho descubierto";
-  if(c?.retroceso&&c.delta>=scen.margin&&usaEmbalse(r))return "Agua alejada";
+  if(c?.retroceso&&c.delta>=scen.margin&&usaEmbalse(r))return c.delta<200?"Agua alejada hasta 200 m":c.delta<500?"Agua alejada 200–500 m":"Agua alejada más de 500 m";
   if(e.d<=scen.margin)return `A menos de ${scen.margin} m`;
   return "Fuera";
 }
@@ -1658,7 +1689,7 @@ const fmtKm2 = v => (+v).toLocaleString("es-PY",{maximumFractionDigits:1});
 const usaEmbalse = r => ["Alta","Media"].includes(r.dependencia_embalse) || r.fuente_agua_consumo==="Toma directa del embalse" || splitMulti(r.usos_agua).some(u=>/Pesca|Abrevadero|Riego|Transporte|Turismo|Acuicultura/.test(u));
 
 function saveScen(){
-  try{ localStorage.setItem(SCEN_KEY, JSON.stringify({uploaded:scen.list.filter(s=>!s.embebido).map(({polys,cache,bbox,...s})=>s), removed:scen.removed, names:scen.names, values:scen.values, groups:scen.groups, meta:scen.meta, active:scen.active, tab:scen.tab, margin:scen.margin, showAll:scen.showAll})); return true; }
+  try{ localStorage.setItem(SCEN_KEY, JSON.stringify({uploaded:scen.list.filter(s=>!s.embebido).map(({polys,cache,bbox,...s})=>s), removed:scen.removed, names:scen.names, values:scen.values, groups:scen.groups, meta:scen.meta, refs:scen.refs, active:scen.active, tab:scen.tab, margin:scen.margin, showAll:scen.showAll})); return true; }
   catch(e){ return false; }
 }
 function loadScen(){
@@ -1666,7 +1697,7 @@ function loadScen(){
   try{
     let s=JSON.parse(localStorage.getItem(SCEN_KEY)||"null");
     if(!s){ const old=JSON.parse(localStorage.getItem("censo-hidrosocial-escenarios-v1")||"null"); if(old) s={uploaded:old.uploaded,removed:old.removed,names:old.names,values:old.values,margin:old.margin}; }
-    if(s){ (s.uploaded||[]).forEach(u=>scen.list.push(prepScenario(u))); scen.removed=s.removed||[]; scen.names=s.names||{}; scen.values=s.values||{}; scen.groups=s.groups||{}; scen.meta=s.meta||{}; scen.active=s.active&&scen.list.some(x=>x.id===s.active)?s.active:null; scen.tab=GRUPOS[s.tab]?s.tab:"crecida"; scen.margin=s.margin??50; scen.showAll=!!s.showAll; }
+    if(s){ (s.uploaded||[]).forEach(u=>scen.list.push(prepScenario(u))); scen.removed=s.removed||[]; scen.names=s.names||{}; scen.values=s.values||{}; scen.groups=s.groups||{}; scen.meta=s.meta||{}; scen.refs=s.refs||{}; scen.active=s.active&&scen.list.some(x=>x.id===s.active)?s.active:null; scen.tab=GRUPOS[s.tab]?s.tab:"crecida"; scen.margin=s.margin??50; scen.showAll=!!s.showAll; }
   }catch(e){}
   if(scen.active && scen.removed.includes(scen.active)) scen.active=null;
 }
@@ -1683,6 +1714,11 @@ function drawScen(){
   if(!a && !scen.showAll) return;
   scenLayer=L.layerGroup().addTo(map);
   const list = scen.showAll ? scenList(grp).slice().reverse() : [a];
+  const refA = !scen.showAll && a && GRUPOS[scenGroup(a)].base ? referenciaNivel(scenGroup(a)) : null;
+  if(refA && refA.id!==a.id && Number(scenValue(a))<Number(scenValue(refA))){
+    // Lecho expuesto: superficie de referencia debajo del nivel analizado
+    L.geoJSON(refA.geom,{pane:"scen",interactive:false,style:()=>({color:PALETTE["--lecho"],weight:.6,fillColor:PALETTE["--lecho"],fillOpacity:sat?.55:.95,opacity:.9,dashArray:"3 3"})}).addTo(scenLayer);
+  }
   for(const s of list){
     const isA = a && s.id===a.id; const lvl = GRUPOS[scenGroup(s)].base;
     let st;
@@ -1712,6 +1748,7 @@ function renderScenCard(){
       ${L_.map(s=>`<button role="radio" data-scen="${esc(s.id)}" aria-checked="${!!(a&&a.id===s.id)}" class="${s.simulado?"sim":""}" title="${esc(scenName(s))} · ${fmtKm2(s.area_km2)} km²${s.simulado?" · simulado":""}">${scen.showAll?`<i style="background:${scenColor(s)}"></i>`:""}${esc(scenName(s))}</button>`).join("")}
     </div>
     <div class="scen-info">${info}</div>
+    ${aIn&&GRUPOS[scenGroup(a)].base?(()=>{ const ref=referenciaNivel(scenGroup(a)); return `<div class="scen-ref"><span>Referencia: <b>${ref?esc(scenName(ref)):"no definida"}</b></span>${ref&&ref.id!==a.id&&Number(scenValue(a))<Number(scenValue(ref))?'<span class="lg-lecho"><i></i>Lecho expuesto</span>':""}</div>${contornoAprox(scenGroup(a))?`<div class="scen-note aviso">${esc(AVISO_CONTORNO)}</div>`:""}`; })():""}
     ${aIn?`<div class="scen-note">Fuente: ${esc(scenMeta(a).fuente)} · ${esc(scenMeta(a).estado)} · ${esc(scenMeta(a).version)}. Distancias planimétricas aproximadas; no representan accesos reales.</div>`:""}
     ${sim?`<div class="scen-note">Los niveles subrayados son simulaciones ilustrativas. Reemplazalos con las superficies estimadas del estudio.</div>`:""}`;
   }
@@ -1797,7 +1834,7 @@ function openScenManager(){
         <td><input class="sel" style="height:28px;min-width:110px" data-sname="${esc(s.id)}" value="${esc(scenName(s))}" aria-label="Nombre del escenario"></td>
         <td><select class="sel" style="height:28px" data-sgrp="${esc(s.id)}" aria-label="Tipo de escenario">${Object.entries(GRUPOS).map(([k,g])=>`<option value="${k}"${k===scenGroup(s)?" selected":""}>${esc(g.largo)}</option>`).join("")}</select></td>
         <td class="num"><input class="sel" type="number" step="any" style="height:28px;width:90px" data-sval="${esc(s.id)}" value="${esc(scenValue(s)??"")}" aria-label="Valor del escenario"></td>
-        <td class="num">${fmtKm2(s.area_km2)}</td><td style="color:var(--ink-3);font-size:12px"><button class="linkbtn" data-smeta="${esc(s.id)}">Fuente y trazabilidad</button><div>${esc(scenMeta(s).estado)} · ${esc(scenMeta(s).version)}</div>${esc(s.archivo||"")}${s.simulado?" · simulado":s.embebido?" · incluido":""}</td>
+        <td class="num">${fmtKm2(s.area_km2)}</td><td style="color:var(--ink-3);font-size:12px">${GRUPOS[scenGroup(s)].base?`<label class="refpick"><input type="radio" name="ref_${scenGroup(s)}" data-sref="${esc(s.id)}"${referenciaNivel(scenGroup(s))===s?" checked":""}> Nivel de referencia</label>`:""}<button class="linkbtn" data-smeta="${esc(s.id)}">Fuente y trazabilidad</button><div>${esc(scenMeta(s).estado)} · ${esc(scenMeta(s).version)}</div>${esc(s.archivo||"")}${s.simulado?" · simulado":s.embebido?" · incluido":""}</td>
         <td><button class="btn small ghost" data-srm="${esc(s.id)}">Quitar</button></td></tr>`).join("") || `<tr><td colspan="7" style="color:var(--ink-3)">No hay escenarios cargados.</td></tr>`}
       </tbody></table></div>
       <div class="callout">Los archivos nuevos se cargan en la pestaña que esté abierta en el panel del mapa (ahora: <b>${esc(GRUPOS[scen.tab].largo)}</b>); el tipo se puede cambiar acá. El valor ordena los escenarios (caudal en m³/s o cota en msnm); se toma del nombre del archivo y se puede corregir. Las geometrías se simplifican a unos 4 m.</div>
@@ -1806,6 +1843,7 @@ function openScenManager(){
   $("#scenAdd").onclick=()=>$("#scenFile").click();
   if($("#scenRestore")) $("#scenRestore").onclick=()=>{ scen.removed=[]; saveScen(); scenChanged(); openScenManager(); };
   document.querySelectorAll("[data-smeta]").forEach(b=>b.onclick=()=>openScenMeta(b.dataset.smeta));
+  document.querySelectorAll("[data-sref]").forEach(i=>i.onchange=()=>{ const s=scenById(i.dataset.sref); scen.refs[scenGroup(s)]=s.id; saveScen(); scenChanged(); openScenManager(); toast(`${scenName(s)} es ahora el nivel de referencia de ${GRUPOS[scenGroup(s)].label}.`); });
   document.querySelectorAll("[data-sname]").forEach(i=>i.onchange=()=>{ scen.names[i.dataset.sname]=i.value.trim()||undefined; saveScen(); scenChanged(); });
   document.querySelectorAll("[data-sgrp]").forEach(i=>i.onchange=()=>{ scen.groups[i.dataset.sgrp]=i.value; saveScen(); scenChanged(); openScenManager(); });
   document.querySelectorAll("[data-sval]").forEach(i=>i.onchange=()=>{ const s=scenById(i.dataset.sval); const v=parseNum(i.value); scen.values[s.id]=v===""?null:v; saveScen(); scenChanged(); openScenManager(); });
@@ -1836,7 +1874,7 @@ function scenFichaHtml(r){
     const L_=scenList(g);if(!L_.length)continue;
     if(G.base){
       const ref=referenciaNivel(g);
-      html+=`<div class="scen-ficha-g"><div class="scen-first"><b>${esc(G.largo)}</b> · referencia ${ref?esc(scenName(ref)):"no definida"}.</div>
+      html+=`<div class="scen-ficha-g"><div class="scen-first"><b>${esc(G.largo)}</b> · referencia ${ref?esc(scenName(ref)):"no definida"}.</div>${contornoAprox(g)?`<p class="scen-note aviso">${esc(AVISO_CONTORNO)}</p>`:""}
       <table class="parts"><thead><tr><td>Cota</td><td>Dist. al agua</td><td>Δ frente referencia</td><td>Situación</td></tr></thead><tbody>
       ${L_.map(s=>{const c=evolucionCosta(s,r), st=expoStatus(s,r);return `<tr${a?.id===s.id?' class="scen-row-active"':''}><td>${esc(scenName(s))}${s.simulado?' <span class="simtag">sim.</span>':''}</td><td>${fmtMetros(c?.despues)}</td><td>${c?.delta===null?"—":(c.delta>0?"+":"")+fmtMetros(c.delta)}</td><td><span class="pill ${c?.lecho?"warn":""}">${esc(st)}</span></td></tr>`;}).join("")}</tbody></table><p class="note">Δ positivo: el agua está más lejos que en la superficie de referencia. Lecho descubierto: punto dentro de la referencia, fuera de la cota analizada. Es una aproximación espacial, no prueba de afectación social.</p></div>`;
     } else {
@@ -1855,7 +1893,7 @@ function scenSummaryHtml(rows){
     const lvl=!!G.base;
     html+=`<div><h3>${esc(G.largo)}</h3><div style="overflow-x:auto"><table class="t"><thead><tr><th>Escenario</th><th class="num">${lvl?"Puntos en agua":"Dentro"}</th><th class="num">${lvl?"Lecho expuesto":"&lt; "+scen.margin+" m"}</th>${lvl?`<th class="num">Usuarios lejos</th>`:`<th class="num">Personas</th>`}<th class="num">IVH alto</th></tr></thead><tbody>
     ${L_.map(s=>{ let din=0,cer=0,p=0,ivhA=0,far=0; rows.forEach(r=>{ const e=expo(s,r); if(!e) return; const near=!e.in&&e.d<=scen.margin; if(e.in){ din++; p+=pers(r); } else if(lvl?evolucionCosta(s,r)?.lecho:near) cer++; if((lvl?afectaDeplecion(s,r):(e.in||near)) && ivh(r).nivel==="Alta") ivhA++; if(lvl && !e.in && e.d>500 && usaEmbalse(r)) far++; }); return `<tr${scen.active===s.id?' class="scen-row-active"':''}><td><button class="linkbtn" data-sumscen="${esc(s.id)}">${esc(scenName(s))}</button>${s.simulado?' <span class="simtag">sim.</span>':''}<div style="font-size:11px;color:var(--ink-3)">${fmtKm2(s.area_km2)} km²</div></td><td class="num">${din}</td><td class="num">${cer}</td><td class="num">${lvl?far:p}</td><td class="num">${ivhA}</td></tr>`; }).join("")}
-    </tbody></table></div><p class="note">${lvl?`Usuarios lejos: fichas que usan el embalse (pesca, riego, abrevadero, cruce, turismo o toma directa) y quedan a más de 500 m del agua con ese nivel.`:`Personas: integrantes declarados en las fichas que quedan dentro.`} IVH alto: ${lvl?"puntos con necesidad de verificar cambios de costa":"dentro o cerca del área"}.</p></div>`;
+    </tbody></table></div><p class="note">${lvl?`Usuarios lejos: fichas que usan el embalse (pesca, riego, abrevadero, cruce, turismo o toma directa) y quedan a más de 500 m del agua con ese nivel.`:`Personas: integrantes declarados en las fichas que quedan dentro.`} IVH alto: ${lvl?"puntos con necesidad de verificar cambios de costa":"dentro o cerca del área"}.</p>${contornoAprox(g)?`<p class="scen-note aviso">${esc(AVISO_CONTORNO)}</p>`:""}</div>`;
   }
   return html;
 }
@@ -1968,7 +2006,7 @@ function nearestLevel(c){
   const pool = real.length>=2 ? real : all;
   return pool.reduce((b,s)=>!b||Math.abs(scenValue(s)-c)<Math.abs(scenValue(b)-c)?s:b,null);
 }
-function refLevel(){ const L_=scen.list.filter(s=>!scen.removed.includes(s.id) && scenGroup(s)==="yguazu"); return L_.find(s=>s.referencia) || L_.reduce((b,s)=>!b||scenValue(s)>scenValue(b)?s:b,null); }
+function refLevel(){ return referenciaNivel("yguazu"); }
 function umbralMembers(u){
   const ref=refLevel(); const lvl=nearestLevel(u.cota); const set=new Set();
   for(const r of state.records){
@@ -1980,7 +2018,16 @@ function umbralMembers(u){
   }
   hy.alertSets[u.id]=set; return set;
 }
+const hoyISO=()=>new Date().toISOString().slice(0,10);
+function diasDesde(iso){ return Math.round((Date.parse(hoyISO()+"T12:00:00")-Date.parse(iso+"T12:00:00"))/864e5); }
+function ultimoObservado(){ let last=-1; for(const arr of Object.values(hy.realSeries)) for(let k=arr.length-1;k>last;k--) if(arr[k]!=null){ last=k; break; } return last; }
+const VIGENCIA_DIAS=3;
+function datosVigentes(){ return hy.mode==="observado" && diasDesde(hy.fechas[hy.idx])<=VIGENCIA_DIAS; }
 function umbralEstado(u,h,proj){
+  if(hy.mode==="observado" && h!=null && !datosVigentes()){ const base=umbralEstadoBase(u,h,proj); return {cls:base.cls==="bad"?"warn":base.cls, txt:`Histórico al ${fmtF(hy.idx)}: ${base.txt.charAt(0).toLowerCase()+base.txt.slice(1)}`}; }
+  return umbralEstadoBase(u,h,proj);
+}
+function umbralEstadoBase(u,h,proj){
   if(h==null) return {cls:"warn",txt:"Sin datos recientes de cota"};
   if(h<=u.cota)return {cls:"bad",txt:hy.mode==="simulado"?"Activo en simulación":"Umbral observado; verificar"};
   if(!proj?.length)return {cls:"warn",txt:"Proyección no disponible"};
@@ -2053,13 +2100,14 @@ function renderHydro(){
     <div class="hy-time">
       <div class="hy-tl"><span>Datos al <b>${fmtF(i)}</b></span><span class="pill ${hy.mode==="simulado"?"warn":"acc"}">${hy.mode==="simulado"?"Serie simulada":"Serie importada · no validada"}</span></div>
       <div class="scen-seg" role="radiogroup" aria-label="Origen de los datos hidrometeorológicos"><button role="radio" data-hmode="simulado" aria-checked="${hy.mode==="simulado"}">Simulaciones</button><button role="radio" data-hmode="observado" aria-checked="${hy.mode==="observado"}">Datos importados</button></div>
+      ${hy.mode==="observado"?(()=>{ const last=ultimoObservado(); if(last<0) return '<p class="scen-note aviso">Todavía no hay datos importados.</p>'; const d=diasDesde(hy.fechas[last]); return d>VIGENCIA_DIAS?`<p class="scen-note aviso">El último dato importado es del ${fmtF(last)} (hace ${d} días). No sirve para alertas actuales: los estados se muestran como históricos.</p>`:(hy.idx<last?`<p class="scen-note">Estás viendo una fecha anterior al último dato (${fmtF(last)}).</p>`:""); })():""}
       ${hy.legacyMixed?'<p class="scen-note">Se detectó almacenamiento antiguo con series mezcladas. Las diferencias recuperadas son de procedencia NO verificable. Existe una copia local de seguridad; volvé a importar fuentes originales para uso técnico.</p>':""}
       <div class="hy-slider"><button class="btn small iconbtn" id="hyPlay" aria-label="${hy.playing?"Pausar":"Reproducir los últimos 4 meses"}">${hy.playing?"❚❚":"▶"}</button><input type="range" id="hyIdx" min="0" max="${f.length-1}" value="${i}" aria-label="Fecha de los datos"></div>
       <div class="hy-tl2"><span>${fmtD(f[0])}</span><span>${fmtD(f[f.length-1])}</span></div>
     </div>
     <section class="hy-card">
       <div class="hy-h"><h3>Embalse Yguazú</h3><button class="linkbtn mono" data-st="${HYDRO.limni.yguazu}">${HYDRO.limni.yguazu}</button></div>
-      <div class="hy-big">${fmtN(h,2)}<small> msnm</small>${h==null?'<span class="pill warn">Sin datos recientes</span>':est?`<span class="pill ${est.id==="u1"?"warn":"bad"}">${esc(est.nombre)} · verificar</span>`:`<span class="pill good">Sin umbral superado</span>`}</div>
+      <div class="hy-big">${fmtN(h,2)}<small> msnm</small>${h==null?'<span class="pill warn">Sin datos recientes</span>':est?`<span class="pill ${est.id==="u1"||(hy.mode==="observado"&&!datosVigentes())?"warn":"bad"}">${esc(est.nombre)} · ${hy.mode==="observado"&&!datosVigentes()?"histórico":"verificar"}</span>`:`<span class="pill good">Sin umbral superado</span>`}</div>
       <div class="hy-sub">7 días: ${h7!=null?(h-h7>=0?"+":"−")+fmtN(Math.abs(h-h7),2)+" m":"—"} · 30 días: ${h30!=null?(h-h30>=0?"+":"−")+fmtN(Math.abs(h-h30),2)+" m":"—"} · Aporte ${fmtN(qin,0)} m³/s · Descarga ${fmtN(hy.qout,0)} m³/s</div>
       ${cotaChart}
       <label class="hy-toggle"><input type="checkbox" id="hyAuto"${hy.auto?" checked":""}><span>Mostrar en el mapa el nivel seleccionado${lvl?`<span class="hint">El mapa usa la superficie más cercana: ${esc(scenName(lvl))}</span>`:""}</span></label>
