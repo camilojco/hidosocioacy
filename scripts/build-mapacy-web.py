@@ -46,7 +46,7 @@ def build() -> None:
         f'<img class="logo" alt="ANDE" src="data:image/png;base64,{logo}">',
         "marcador del logo",
     )
-    template = template.replace("Versión de prueba – Camilo Caballero Ocariz", "Mapacy · versión servida")
+    template = replace_once(template, "Versión de prueba – Camilo Caballero Ocariz", "Mapacy · versión servida", "subtítulo")
 
     template = re.sub(
         r"(<h3>Datos de ejemplo</h3>\s*)<p>.*?</p>",
@@ -111,7 +111,7 @@ def build() -> None:
     replacement = '''  $("#btnReset").onclick=async()=>{
     if(!armed){ armed=true; $("#btnReset").textContent="Confirmar: borrar cambios y volver al ejemplo"; $("#rsMsg").textContent="Se reemplazarán las fichas y el historial de la base central por el estado inicial."; return; }
     try{ await resetSample(); }catch(error){ toast("No se pudieron restablecer los datos: "+error.message); return; }
-    state.selected=null; state.filters={q:"",embalse:"",distrito:"",tipo:"",estado:"",franja:"",ivh:"",stat:"",origen:"",alerta:""}; $("#q").value=""; closeModal(); renderAll(); fitAll(); toast("Se restablecieron los datos iniciales de la base central.");
+    state.selected=null; state.filters={q:"",embalse:"",distrito:"",tipo:"",estado:"",franja:"",ivh:"",stat:"",origen:"",calidad:"",alerta:""}; $("#q").value=""; closeModal(); renderAll(); fitAll(); toast("Se restablecieron los datos iniciales de la base central.");
   };
 '''
     template = template[:reset_match.start()] + replacement + template[reset_match.end():]

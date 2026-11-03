@@ -35,7 +35,7 @@ const saveSoon=debounce(()=>save(),400);
 async function load(){
   const data=await apiRequest("/api/snapshot");
   databaseRevision=data.revision;
-  state.records=data.records.map(record=>Object.assign(blank(),record));
+  state.records=data.records.map(record=>asegurarClase(Object.assign(blank(),record)));
   state.history=data.history||[];
   state.editor=data.editor||"";
   state.source=data.source||state.source;
@@ -46,7 +46,7 @@ async function resetSample(){
   const data=await apiRequest("/api/reset",{method:"POST",body:"{}"});
   databaseRevision=data.revision;
   databaseSaveBlocked=false;
-  state.records=data.records.map(record=>Object.assign(blank(),record));
+  state.records=data.records.map(record=>asegurarClase(Object.assign(blank(),record)));
   state.history=data.history||[];
   state.editor=data.editor||"";
   state.source=data.source||{};
